@@ -1,18 +1,24 @@
 package com.example.mysheetreader;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	GoogleSignInAccount account;
 	SignInButton signInButton;
 	TextView test;
+	CoordinatorLayout coordinatorLayout;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		setSupportActionBar(toolbar);
 		signInButton = findViewById(R.id.sign_in_button);
 		test = findViewById(R.id.test);
+		coordinatorLayout = findViewById(R.id.mainActivityCordinatorLayout);
 
 		FloatingActionButton fab = findViewById(R.id.fab);
 		fab.setOnClickListener(this);
@@ -80,6 +89,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		if (account != null) {
 			signInButton.setVisibility(View.GONE);
 			test.setText(account.getEmail());
+		}
+
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+				!= PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.INTERNET},
+									1);
+		}
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS)
+				!= PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.GET_ACCOUNTS},
+					2);
 		}
 	}
 
@@ -113,7 +133,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				break;
 			case R.id.fab:
 				FragmentManager fragmentManager = getSupportFragmentManager();
-				UrlDialogFragment urlDialogFragment = UrlDialogFragment.newInstance();
+				UrlDialogFragment urlDialogFragment = UrlDialogFragment.newInstance(new TaskTracer() {
+					@Override
+					public void onTaskCompleted() {
+						Snackbar snackbar = Snackbar.make(coordinatorLayout,
+								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
+						snackbar.show();
+					}
+
+					@Override
+					public void onTaskInProgress() {
+
+					}
+
+					@Override
+					public void onTaskFailed(Exception exception) {
+
+					}
+				});
 				urlDialogFragment.show(fragmentManager, "name");
 				break;
 		}
@@ -154,13 +191,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	public static class UrlDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 		View view;
+		static TaskTracer taskTracer;
 
 		public UrlDialogFragment() {
 
 		}
 
-		public static UrlDialogFragment newInstance(){
+		public static UrlDialogFragment newInstance(TaskTracer _taskTracer){
 			UrlDialogFragment urlDialogFragment = new UrlDialogFragment();
+			taskTracer = _taskTracer;
 			return urlDialogFragment;
 		}
 
@@ -197,13 +236,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		public void onClick(DialogInterface dialog, int which) {
 			Map params = new HashMap();
 			EditText urlView = view.findViewById(R.id.text_dialog_url);
-			params.put("url", urlView.getText());
+			//text is actually spanable string builder
+			params.put("url", urlView.getText().toString());
 
 			if (which == DialogInterface.BUTTON_POSITIVE) {
-				new GetDataTask(new GetDataTask.getDataTaskTracer() {
+				new GetDataTask(new TaskTracer() {
 					@Override
 					public void onTaskCompleted() {
-
+						/*FragmentActivity activity = (FragmentActivity) view.getContext();
+						Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.mainActivityCordinatorLayout),
+								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
+						snackbar.show();*/
+						taskTracer.onTaskCompleted();
 					}
 
 					@Override
@@ -213,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 					@Override
 					public void onTaskFailed(Exception exception) {
-
+						taskTracer.onTaskFailed(exception);
 					}
 				}).execute(params, getActivity());
 			} else if (which == DialogInterface.BUTTON_NEGATIVE) {
