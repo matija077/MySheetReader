@@ -40,6 +40,7 @@ public class GetDataTask extends AsyncTask {
 	List<List<String>> block4;
 	List<List<String>> block5;
 	Exception exception;
+	List<Block> blocks;
 
 
 	public interface getDataTaskTracer {
@@ -106,20 +107,37 @@ public class GetDataTask extends AsyncTask {
 			requuestSpreadsheet = null;
 
 			String rowStartVariable = endRowFixedLenght;
+			blocks = new ArrayList<>();
+			ParseValueRange parseValueRange = new ParseValueRange();
+			// for fixedSize we fetch everything and parse it
 			for (int i=0; i<numberOgBlocks; i++) {
 				ValueRange result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
+						.setValueRenderOption("FORMULA")
 						.execute();
+				blocks.add(new Block());
+				//some problems with size
+				Integer size =  blocks.size() - 1;
+				Block randomBlock = blocks.get(size);
+				parseValueRange.parseRange(result, randomBlock);
 				do {
+					//variableLength we take one row after the last one and increase by one until
+					//we return from parserange or size of result is 2 beacuse there will be no values.
 					dataRange = dataRangeBuilder(sheetName, columnStart, rowStartVariable, columnEnd,
 							rowStartVariable, 1, 1);
-					result = sheets.spreadsheets().values().get(spreadsheetID, dataRange).execute();
-					Log.d(TAG, String.valueOf(result.getValues()));
+					result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
+							.setValueRenderOption("FORMULA")
+							.execute();
+					size =  blocks.size() - 1;
+					randomBlock = blocks.get(size);
+					parseValueRange.parseRange(result, randomBlock);
 					rowStartVariable = String.valueOf(Integer.parseInt(rowStartVariable) + 1);
 				}while(result.size()==3);
 
+				//mwe are now on the first empty row. we move to second.
 				rowStartVariable = String.valueOf(Integer.parseInt(rowStartVariable) + 1);
 				dataRange = dataRangeBuilder(sheetName, columnStart, rowStartVariable, columnEnd,
 						rowStartVariable, 1, numberOfRowsFixedLenght + 1);
+				// after setting dataRange we set rowStartVariable to last row in fixedLength
 				rowStartVariable = String.valueOf(Integer.parseInt(rowStartVariable) + numberOfRowsFixedLenght + 1);
 			}
 
@@ -129,6 +147,7 @@ public class GetDataTask extends AsyncTask {
 		} catch (Exception _exception) {
 			exception = _exception;
 			Log.d(TAG, "opa");
+			cancel(true);
 		}
 
 			return null;

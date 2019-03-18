@@ -6,9 +6,13 @@ import java.util.List;
 
 public class Block {
 	private List<Category> categories;
-	
+
 	public Block() {
 		this.categories = new ArrayList<>();
+	}
+
+	public Integer getCategoresSize(){
+		return this.categories.size();
 	}
 
 	public void createCategory(String name) {
@@ -18,6 +22,10 @@ public class Block {
 
 	public Category getCategory(int position) {
 		return categories.get(position);
+	}
+
+	public String getCategoryName(int position) {
+		return this.getCategory(position).getName();
 	}
 
 	public void addRow(int categoryPosition, String subCategory, String data) {
@@ -50,6 +58,10 @@ public class Block {
 		private Category(String name) {
 			this.name = name;
 			this.rows = new ArrayList<>();
+		}
+
+		private String getName(){
+			return this.name;
 		}
 
 		private void createRow(String subCategory, String data) {
@@ -97,7 +109,11 @@ public class Block {
 
 			private void createDataInteger(String data) {
 				String[] subStrings = data.split("\\+");
+				// format of data is =number + number + number ... with possible whitespaces.
+				subStrings[0] = subStrings[0].substring(subStrings[0].indexOf("=") + 1);
 				for (String substring:subStrings) {
+					//remove all whitespaces
+					substring = substring.replaceAll("\\s+", "");
 					this.dataInteger += Integer.valueOf(substring);
 				}
 			}

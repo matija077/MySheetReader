@@ -148,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 					@Override
 					public void onTaskFailed(Exception exception) {
+						Snackbar snackbar = Snackbar.make(coordinatorLayout,
+								R.string.snackbar_main_activity_error, Snackbar.LENGTH_LONG);
+						snackbar.show();
 
 					}
 				});
