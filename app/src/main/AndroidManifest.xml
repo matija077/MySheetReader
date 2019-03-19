@@ -13,6 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".CategoryList"
+            android:label="@string/title_activity_category"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
             android:name=".BlockList"
             android:label="@string/title_activity_block_list"
             android:theme="@style/AppTheme.NoActionBar">

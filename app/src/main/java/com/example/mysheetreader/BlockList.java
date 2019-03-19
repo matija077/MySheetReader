@@ -45,7 +45,16 @@ public class BlockList extends AppCompatActivity {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					Log.d(TAG, "ola");
-					Log.d(TAG, "ola");
+					Intent intent = new Intent(BlockList.this, CategoryList.class);
+					Bundle bundle = new Bundle();
+					bundle.putSerializable(getResources().getString(R.string.category_key),
+							blocks.get(position));
+					intent.putExtras(bundle);
+					try {
+						startActivity(intent);
+					} catch(Exception exception) {
+						Log.e(TAG, String.valueOf(exception));
+					}
 				}
 			});
 		} catch (Exception exception) {

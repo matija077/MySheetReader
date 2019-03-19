@@ -5,5 +5,7 @@
     <string name="snackbar_main_activity_get">Data fetched</string>
     <string name="snackbar_main_activity_error">Failed to fetch data</string>
     <string name="blocks_Key">blocks</string>
+    <string name="category_key">categories</string>
     <string name="title_activity_block_list">blockList</string>
+    <string name="title_activity_category">Category</string>
 </resources>
