@@ -22,6 +22,10 @@ public class Block implements Serializable {
 		return this.categories.size();
 	}
 
+	public List<Category> getCategories(){
+		return this.categories;
+	}
+
 	public void createCategory(String name) {
 		Category category = new Category(name);
 		categories.add(category);
@@ -29,10 +33,6 @@ public class Block implements Serializable {
 
 	public Category getCategory(int position) {
 		return categories.get(position);
-	}
-
-	public String getCategoryName(int position) {
-		return this.getCategory(position).getName();
 	}
 
 	public void addRow(int categoryPosition, String subCategory, String data) {
@@ -58,7 +58,7 @@ public class Block implements Serializable {
 	}
 
 
-	private class Category implements  Serializable {
+	public class Category implements  Serializable {
 		private String name;
 		private List<Row> rows;
 
@@ -67,7 +67,7 @@ public class Block implements Serializable {
 			this.rows = new ArrayList<>();
 		}
 
-		private String getName(){
+		public String getName(){
 			return this.name;
 		}
 

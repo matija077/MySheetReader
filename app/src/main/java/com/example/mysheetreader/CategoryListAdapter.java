@@ -8,18 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import java.util.List;
+import java.util.Locale;
 
 
-public class BlockArrayAdapter extends ArrayAdapter {
+public class CategoryListAdapter extends ArrayAdapter {
+
 	private Context context;
-	private List<Block> blocks;
+	private List<Block.Category> categories;
 
-	public BlockArrayAdapter(@NonNull Context context, int resource, @NonNull List<Block> blocks) {
-		super(context, resource, blocks);
+	public CategoryListAdapter(@NonNull Context context, int resource, @NonNull List objects) {
+		super(context, resource, objects);
 		this.context = context;
-		this.blocks = blocks;
+		this.categories = objects;
 	}
+
 
 	@NonNull
 	@Override
@@ -29,9 +33,8 @@ public class BlockArrayAdapter extends ArrayAdapter {
 			view = LayoutInflater.from(context).inflate(R.layout.row, parent, false);
 		}
 
-		Block block = blocks.get(position);
 		TextView textView = view.findViewById(R.id.row_text_view);
-		textView.setText(block.getBlockId());
+		textView.setText(categories.get(position).getName());
 
 		return view;
 	}

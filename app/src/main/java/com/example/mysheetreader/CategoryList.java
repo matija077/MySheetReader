@@ -8,8 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class CategoryList extends AppCompatActivity {
@@ -28,6 +32,23 @@ public class CategoryList extends AppCompatActivity {
 		Object object = bundle.getSerializable(getResources().getString(R.string.category_key));
 		block = (Block) object;
 		Log.d(TAG, "ola");
+		try {
+			CategoryListAdapter categoryListAdapter = new CategoryListAdapter(this, R.layout.row,
+					block.getCategories());
+			ListView listView = findViewById(R.id.category_list_view);
+			listView.setAdapter(categoryListAdapter);
+
+			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					Log.d(TAG, "ola");
+					Log.d(TAG, "ola");
+				}
+			});
+		} catch (Exception exception) {
+			Log.e(TAG, "ola");
+		}
+
 	}
 
 }
