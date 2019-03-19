@@ -36,7 +36,15 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 
 		try {
 			RowArrayAdapter rowArrayAdapter = new RowArrayAdapter(this, R.layout.data_row,
-					category.getRows());
+					category.getRows(), new RowArrayAdapter.DataString() {
+				@Override
+				public void onClicked(View v) {
+					RowArrayAdapter rowArrayAdapter = (RowArrayAdapter) listView.getAdapter();
+					int position = listView.getPositionForView(v);
+					Block.Category.Row row = (Block.Category.Row) rowArrayAdapter.getItem(position);
+					Log.d(TAG, "ola");
+				}
+			});
 			listView = findViewById(R.id.row_list_view);
 			listView.setAdapter(rowArrayAdapter);
 		} catch(Exception exception) {

@@ -19,16 +19,18 @@ import java.util.List;
 public class RowArrayAdapter extends ArrayAdapter {
 	private Context context;
 	private List<Block.Category.Row> rows;
+	private DataString dataString;
 
-	public RowArrayAdapter(@NonNull Context context, int resource, @NonNull List objects) {
+	public RowArrayAdapter(@NonNull Context context, int resource, @NonNull List objects, DataString dataString) {
 		super(context, resource, objects);
 		this.context = context;
 		this.rows = objects;
+		this.dataString = dataString;
 	}
 
 	@NonNull
 	@Override
-	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+	public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		View view = convertView;
 		if (view == null) {
 			view = LayoutInflater.from(context).inflate(R.layout.data_row, parent, false);
@@ -43,6 +45,7 @@ public class RowArrayAdapter extends ArrayAdapter {
 			@Override
 			public void onClick(View v) {
 				Log.d("weird", "da");
+				dataString.onClicked(v);
 			}
 		});
 
@@ -83,5 +86,9 @@ public class RowArrayAdapter extends ArrayAdapter {
 			String text = s.toString();
 			rows.get(this.position).setAdd(text);
 		}
+	}
+
+	public interface DataString {
+		void onClicked(View v);
 	}
 }
