@@ -71,6 +71,10 @@ public class Block implements Serializable {
 			return this.name;
 		}
 
+		public List<Block.Category.Row> getRows(){
+			return this.rows;
+		}
+
 		private void createRow(String subCategory, String data) {
 			Row row = new Row(subCategory, data);
 			rows.add(row);
@@ -93,19 +97,40 @@ public class Block implements Serializable {
 			return getRow(rowPosition).getData();
 		}
 
-		private class Row implements  Serializable {
+		public class Row implements  Serializable {
 			private String subCategory;
 			private String data;
 			private Integer dataInteger;
+			private String add;
 
 			private Row(String subCategory, String data) {
 				this.subCategory = subCategory;
 				this.data = data;
 				this.dataInteger = 0;
 				createDataInteger(data);
+				this.add = "";
+			}
+			public Integer getDataInteger() {
+				return this.dataInteger;
 			}
 
-			private void addData(String newData) {
+			public String getData() {
+				return this.data;
+			}
+
+			public String getSubCategory(){
+				return this.subCategory;
+			}
+
+			public String getAdd() {
+				return this.add;
+			}
+
+			public void setAdd(String add) {
+				this.add = add;
+			}
+
+			public void addData(String newData) {
 				this.data += "+" + newData;
 				addDataInteger(newData);
 			}
@@ -123,14 +148,6 @@ public class Block implements Serializable {
 					substring = substring.replaceAll("\\s+", "");
 					this.dataInteger += Integer.valueOf(substring);
 				}
-			}
-
-			private Integer getDataInteger() {
-				return this.dataInteger;
-			}
-
-			private String getData() {
-				return this.data;
 			}
 		}
 	}

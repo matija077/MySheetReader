@@ -6,6 +6,9 @@
     <string name="snackbar_main_activity_error">Failed to fetch data</string>
     <string name="blocks_Key">blocks</string>
     <string name="category_key">categories</string>
+    <string name="row_key">rows</string>
     <string name="title_activity_block_list">blockList</string>
     <string name="title_activity_category">Category</string>
+    <string name="title_activity_row_list">rowList</string>
+    <string name="data_row_button_apply">Apply</string>
 </resources>

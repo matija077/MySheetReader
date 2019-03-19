@@ -41,8 +41,16 @@ public class CategoryList extends AppCompatActivity {
 			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					Log.d(TAG, "ola");
-					Log.d(TAG, "ola");
+					Intent intent = new Intent(CategoryList.this, RowList.class);
+					Bundle bundle = new Bundle();
+					bundle.putSerializable(getResources().getString(R.string.row_key),
+							block.getCategory(position));
+					intent.putExtras(bundle);
+					try {
+						startActivity(intent);
+					} catch(Exception exception) {
+						Log.e(TAG, String.valueOf(exception));
+					}
 				}
 			});
 		} catch (Exception exception) {
