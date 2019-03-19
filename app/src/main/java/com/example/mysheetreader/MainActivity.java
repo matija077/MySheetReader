@@ -1,6 +1,7 @@
 package com.example.mysheetreader;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -38,7 +39,9 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.api.services.sheets.v4.SheetsScopes;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -135,10 +138,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				FragmentManager fragmentManager = getSupportFragmentManager();
 				UrlDialogFragment urlDialogFragment = UrlDialogFragment.newInstance(new TaskTracer() {
 					@Override
-					public void onTaskCompleted() {
+					public void onTaskCompleted(Object object) {
 						Snackbar snackbar = Snackbar.make(coordinatorLayout,
 								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
 						snackbar.show();
+						showData(object);
 					}
 
 					@Override
@@ -245,12 +249,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			if (which == DialogInterface.BUTTON_POSITIVE) {
 				new GetDataTask(new TaskTracer() {
 					@Override
-					public void onTaskCompleted() {
+					public void onTaskCompleted(Object object) {
 						/*FragmentActivity activity = (FragmentActivity) view.getContext();
 						Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.mainActivityCordinatorLayout),
 								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
 						snackbar.show();*/
-						taskTracer.onTaskCompleted();
+						taskTracer.onTaskCompleted(object);
 					}
 
 					@Override
@@ -266,6 +270,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			} else if (which == DialogInterface.BUTTON_NEGATIVE) {
 				UrlDialogFragment.this.getDialog().cancel();
 			}
+		}
+	}
+
+	public void showData(Object object){
+		Intent intent = new Intent(MainActivity.this, BlockList.class);
+		Bundle bundle = new Bundle();
+		bundle.putSerializable(getResources().getString(R.string.blocks_Key), (Serializable) object);
+		intent.putExtras(bundle);
+		try {
+			startActivity(intent);
+		} catch(Exception exception) {
+			Log.e(TAG, String.valueOf(exception));
 		}
 	}
 }

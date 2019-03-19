@@ -4,4 +4,6 @@
     <string name="url_fragment_title">Write sheet URL</string>
     <string name="snackbar_main_activity_get">Data fetched</string>
     <string name="snackbar_main_activity_error">Failed to fetch data</string>
+    <string name="blocks_Key">blocks</string>
+    <string name="title_activity_block_list">blockList</string>
 </resources>

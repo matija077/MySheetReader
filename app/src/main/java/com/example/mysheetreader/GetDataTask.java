@@ -158,7 +158,7 @@ public class GetDataTask extends AsyncTask {
 		super.onPostExecute(o);
 
 		//getDataTaskTracer.onTaskCompleted();
-		taskTracer.onTaskCompleted();
+		taskTracer.onTaskCompleted(blocks);
 	}
 
 	@Override

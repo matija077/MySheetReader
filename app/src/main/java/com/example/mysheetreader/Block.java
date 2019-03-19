@@ -1,10 +1,11 @@
 package com.example.mysheetreader;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Block {
+public class Block implements Serializable {
 	private List<Category> categories;
 
 	public Block() {
@@ -51,7 +52,7 @@ public class Block {
 	}
 
 
-	private class Category {
+	private class Category implements  Serializable {
 		private String name;
 		private List<Row> rows;
 
@@ -86,7 +87,7 @@ public class Block {
 			return getRow(rowPosition).getData();
 		}
 
-		private class Row {
+		private class Row implements  Serializable {
 			private String subCategory;
 			private String data;
 			private Integer dataInteger;
