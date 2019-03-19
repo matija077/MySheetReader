@@ -6,10 +6,16 @@ import java.util.List;
 
 
 public class Block implements Serializable {
+	private String blockId;
 	private List<Category> categories;
 
-	public Block() {
+	public Block(String id) {
 		this.categories = new ArrayList<>();
+		this.blockId = id;
+	}
+
+	public String getBlockId(){
+		return this.blockId;
 	}
 
 	public Integer getCategoresSize(){
