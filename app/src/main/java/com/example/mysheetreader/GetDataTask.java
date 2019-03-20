@@ -19,6 +19,10 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +45,7 @@ public class GetDataTask extends AsyncTask {
 	List<List<String>> block5;
 	Exception exception;
 	List<Block> blocks;
+	String spreadsheetID;
 
 
 	public interface getDataTaskTracer {
@@ -67,7 +72,7 @@ public class GetDataTask extends AsyncTask {
 
 			String sheetId = url.substring(url.indexOf('=') + 1);
 			// 3 for 3 characters in '/d/'
-			String spreadsheetID = url.substring(url.indexOf("/d/") + 3, url.indexOf("/edit"));
+			spreadsheetID = url.substring(url.indexOf("/d/") + 3, url.indexOf("/edit"));
 			String sheetName = "";
 
 			String columnStart = "A";
@@ -110,6 +115,7 @@ public class GetDataTask extends AsyncTask {
 			blocks = new ArrayList<>();
 			ParseValueRange parseValueRange = new ParseValueRange();
 			// for fixedSize we fetch everything and parse it
+			//TODO add rowRow data if this option is requeired. otherwise add Block or Categroy range
 			for (int i=0; i<numberOgBlocks; i++) {
 				ValueRange result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
 						.setValueRenderOption("FORMULA")
@@ -142,7 +148,8 @@ public class GetDataTask extends AsyncTask {
 			}
 
 
-				Log.d(TAG, "opa");
+			Log.d(TAG, "opa");
+			saveToFile();
 
 		} catch (Exception _exception) {
 			exception = _exception;
@@ -176,5 +183,23 @@ public class GetDataTask extends AsyncTask {
 		dataRange = sheetName + "!" + columnStart + rowStart + ":" + columnEnd + rowEnd;
 
 		return dataRange;
+	}
+
+	protected void saveToFile() {
+		FileOutputStream fileOutputStream;
+		String filename = context.getResources().getString(R.string.file_name);
+		File file = new File(context.getFilesDir(), filename);
+
+		try {
+			fileOutputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+			fileOutputStream.write(spreadsheetID.getBytes());
+			fileOutputStream.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			cancel(true);
+		} catch (IOException e) {
+			e.printStackTrace();
+			cancel(true);
+		}
 	}
 }

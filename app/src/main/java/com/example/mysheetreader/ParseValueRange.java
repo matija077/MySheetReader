@@ -39,4 +39,18 @@ public class ParseValueRange {
 		}
 
 	}
+
+	public List<List<Object>> createValueRange(Block.Category category) {
+		List<List<Object>> data = new ArrayList<>();
+
+		for (int i=0; i < category.getRows().size(); i++) {
+			List<Object> row = new ArrayList<>();
+			row.add(category.getName());
+			row.add(category.getRows().get(i).getSubCategory());
+			row.add(category.getRows().get(i).getData());
+			data.add(row);
+		}
+
+		return data;
+	}
 }

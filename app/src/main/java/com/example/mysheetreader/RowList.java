@@ -21,6 +21,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class RowList extends AppCompatActivity implements View.OnClickListener {
 	private Block.Category category;
@@ -153,5 +156,24 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 			//TODO move to the outside of the loop
 			rowArrayAdapter.notifyDataSetChanged();
 		}
+
+		/*Map map = new HashMap();
+		map.put(getResources().getString(R.string.row_key), category);
+		new SaveDataTask(new TaskTracer(){
+			@Override
+			public void onTaskCompleted(Object object) {
+
+			}
+
+			@Override
+			public void onTaskInProgress() {
+
+			}
+
+			@Override
+			public void onTaskFailed(Exception exception) {
+
+			}
+		}).execute(map, this);*/
 	}
 }

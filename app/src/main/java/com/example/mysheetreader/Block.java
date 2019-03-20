@@ -102,6 +102,8 @@ public class Block implements Serializable {
 			private String data;
 			private Integer dataInteger;
 			private String add;
+			private Boolean hasChanged = false;
+			private String rowRow;
 
 			private Row(String subCategory, String data) {
 				this.subCategory = subCategory;
@@ -133,6 +135,18 @@ public class Block implements Serializable {
 			public void setData(String data) {
 				this.data = data;
 				createDataInteger(data);
+			}
+
+			public Boolean getHasChanged() {
+				return hasChanged;
+			}
+
+			public void setHasChanged() {
+				this.hasChanged = !this.hasChanged;
+			}
+
+			public String getRowRow() {
+				return rowRow;
 			}
 
 			public void addData(String newData) {
