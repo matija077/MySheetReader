@@ -106,6 +106,7 @@ public class SaveDataTask extends AsyncTask {
 	}
 
 	protected String readFromFile(){
+		// https://www.journaldev.com/9383/android-internal-storage-example-tutorial
 		String filename = context.getResources().getString(R.string.file_name);
 		File file = new File(context.getFilesDir(), filename);
 		FileInputStream fileInputStream;

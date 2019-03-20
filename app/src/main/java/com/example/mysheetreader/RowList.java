@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -52,9 +53,28 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 				@Override
 				public void onClicked(View v) {
 					// we get position from listView and than get data from rowArrayAdapter
-					RowArrayAdapter rowArrayAdapter = (RowArrayAdapter) listView.getAdapter();
+					final RowArrayAdapter rowArrayAdapter = (RowArrayAdapter) listView.getAdapter();
 					int position = listView.getPositionForView(v);
 					Block.Category.Row row = (Block.Category.Row) rowArrayAdapter.getItem(position);
+					//we don't need tasktracer here!
+					ChangeDataFragment changeDataFragment = ChangeDataFragment.newInstance(row, new TaskTracer() {
+						@Override
+						public void onTaskCompleted(Object object) {
+							//rowArrayAdapter.notifyDataSetChanged();
+						}
+
+						@Override
+						public void onTaskInProgress() {
+
+						}
+
+						@Override
+						public void onTaskFailed(Exception exception) {
+
+						}
+					});
+					FragmentManager fragmentManager = getSupportFragmentManager();
+					changeDataFragment.show(fragmentManager, "name");
 					Log.d(TAG, "ola");
 				}
 			});
@@ -74,17 +94,19 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		}
 	}
 
-	public static class ChangeDataFragment extends DialogFragment implements DialogInterface.OnClickListener {
+	public static class ChangeDataFragment extends DialogFragment implements DialogInterface.OnClickListener{
 		// view is here because we have class implementation of onClickListener and we need view there.
 		View view;
 		static Block.Category.Row row;
+		static TaskTracer taskTracer;
 
 		public ChangeDataFragment() {
 
 		}
 
-		public static ChangeDataFragment newInstance(Block.Category.Row _row) {
+		public static ChangeDataFragment newInstance(Block.Category.Row _row, TaskTracer _taskTracer) {
 			row = _row;
+			taskTracer = _taskTracer;
 			ChangeDataFragment changeDataFragment = new ChangeDataFragment();
 			return changeDataFragment;
 		}
@@ -122,6 +144,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		public void onClick(DialogInterface dialog, int which) {
 			if (which==DialogInterface.BUTTON_POSITIVE) {
 				changeData(view);
+				taskTracer.onTaskCompleted(Boolean.TRUE);
 			} else if (which == DialogInterface.BUTTON_NEGATIVE){
 				ChangeDataFragment.this.getDialog().cancel();
 			}
@@ -153,9 +176,11 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 			}
 			Block.Category.Row row = (Block.Category.Row) rowArrayAdapter.getItem(i);
 			Log.d(TAG, "ola");
-			//TODO move to the outside of the loop
-			rowArrayAdapter.notifyDataSetChanged();
+
+
 		}
+		//TODO move to the inside of the loop ?
+		rowArrayAdapter.notifyDataSetChanged();
 
 		/*Map map = new HashMap();
 		map.put(getResources().getString(R.string.row_key), category);
