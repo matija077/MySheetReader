@@ -130,6 +130,11 @@ public class Block implements Serializable {
 				this.add = add;
 			}
 
+			public void setData(String data) {
+				this.data = data;
+				createDataInteger(data);
+			}
+
 			public void addData(String newData) {
 				this.data += "+" + newData;
 				addDataInteger(newData);

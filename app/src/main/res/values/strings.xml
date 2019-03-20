@@ -11,4 +11,7 @@
     <string name="title_activity_category">Category</string>
     <string name="title_activity_row_list">rowList</string>
     <string name="data_row_button_apply">Apply</string>
+    <string name="data_change_fragment_title">Change data</string>
+    <string name="data_change_fragmebnt_positive_button">Apply</string>
+    <string name="data_change_fragment_negative_button">Cancel</string>
 </resources>
