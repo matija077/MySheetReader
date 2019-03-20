@@ -13,6 +13,8 @@ public class ParseValueRange {
 
 	public void parseRange(ValueRange valueRange, Block block) {
 		List<List<Object>> values = valueRange.getValues();
+		String range = valueRange.getRange();
+		range = calculateRowRange(range, 0);
 
 		//for variableLengthCategory last one is empty
 		if (values==null) {
@@ -29,7 +31,8 @@ public class ParseValueRange {
 			if (block.getCategoresSize() == 0 || value1!="") {
 				block.createCategory(value1);
 			}
-			block.addRow(block.getCategoresSize() - 1, value2, value3);
+			block.addRow(block.getCategoresSize() - 1, value2, value3, range);
+			range = calculateRowRange(range, 1);
 			/*if (!block.getCategoryName(block.getCategoresSize() - 1).equals(value1)) {
 				block.createCategory(value1);
 			} else {
@@ -38,6 +41,24 @@ public class ParseValueRange {
 
 		}
 
+	}
+
+	public String calculateRowRange(String range, int offset){
+		String sheetName = range.substring(0, range.indexOf("!") + 1);
+		String temp = range.substring(range.indexOf("!") + 1);
+
+		int i = 0;
+		while (i < temp.length() && !Character.isDigit(temp.charAt(i))) i++;
+		int j = i;
+		while (j < temp.length() && Character.isDigit(temp.charAt(j))) j++;
+
+		int rowRow = Integer.valueOf(temp.substring(i, j));
+		rowRow += offset;
+
+		String rowRange;
+		rowRange = sheetName + "C" + String.valueOf(rowRow) + ":" + "C" + String.valueOf(rowRow);
+
+		return rowRange;
 	}
 
 	public List<List<Object>> createValueRange(Block.Category category) {

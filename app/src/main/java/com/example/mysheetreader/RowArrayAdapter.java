@@ -60,6 +60,7 @@ public class RowArrayAdapter extends ArrayAdapter {
 		//we need to clean all added data
 		TextView textViewDataInteger = view.findViewById(R.id.data_row_data_integer);
 		rows.get(position).addData(data);
+		rows.get(position).setHasChanged();
 		textViewDataInteger.setText(String.valueOf(rows.get(position).getDataInteger()));
 
 		EditText editText = view.findViewById(R.id.data_row_add);

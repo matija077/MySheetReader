@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
@@ -31,6 +32,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 	private static final String TAG = "RowList";
 	private Button applyButton;
 	private ListView listView;
+	private CoordinatorLayout coordinatorLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		applyButton = findViewById(R.id.apply);
+		coordinatorLayout = findViewById(R.id.activity_row_list_cordinator_layout);
 
 		applyButton.setOnClickListener(this);
 		Intent intent = getIntent();
@@ -60,7 +63,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 					ChangeDataFragment changeDataFragment = ChangeDataFragment.newInstance(row, new TaskTracer() {
 						@Override
 						public void onTaskCompleted(Object object) {
-							//rowArrayAdapter.notifyDataSetChanged();
+							rowArrayAdapter.notifyDataSetChanged();
 						}
 
 						@Override
@@ -159,6 +162,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 			EditText editText = view.findViewById(R.id.dialog_data_change);
 			String data = String.valueOf(editText.getText());
 			row.setData(data);
+			row.setHasChanged();
 		}
 	}
 
@@ -182,12 +186,12 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		//TODO move to the inside of the loop ?
 		rowArrayAdapter.notifyDataSetChanged();
 
-		/*Map map = new HashMap();
+		Map map = new HashMap();
 		map.put(getResources().getString(R.string.row_key), category);
 		new SaveDataTask(new TaskTracer(){
 			@Override
 			public void onTaskCompleted(Object object) {
-
+				resetHasChanged();;
 			}
 
 			@Override
@@ -199,6 +203,13 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 			public void onTaskFailed(Exception exception) {
 
 			}
-		}).execute(map, this);*/
+		}).execute(map, this);
+	}
+
+	private void resetHasChanged(){
+		this.category.resetHasChanged();
+		Snackbar snackbar = Snackbar.make(coordinatorLayout,
+				R.string.snkacbar_row_list_activity_update, Snackbar.LENGTH_LONG);
+		snackbar.show();
 	}
 }

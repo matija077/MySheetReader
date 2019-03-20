@@ -13,6 +13,8 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
@@ -49,8 +51,8 @@ public class SaveDataTask extends AsyncTask {
 	protected Object doInBackground(Object... objects) {
 		try {
 			Map map = (Map) objects[0];
-			category = (Block.Category) map.get(R.string.row_key);
 			context = (Context) objects[1];
+			category = (Block.Category) map.get(context.getResources().getString(R.string.row_key));
 			parseValueRange = new ParseValueRange();
 
 			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
@@ -74,11 +76,27 @@ public class SaveDataTask extends AsyncTask {
 				}
 			}*/
 
+			List<ValueRange> data = new ArrayList<>();
+			for (Block.Category.Row row:category.getRows()) {
+				if (row.getHasChanged() == Boolean.TRUE) {
+					List<List<Object>> values = new ArrayList<>();
+					List<Object> value = prepareRow(row);
+					values.add(value);
+					data.add(new ValueRange()
+							.setRange(row.getRowRow())
+							.setValues(values));
+				}
+			}
 			String spreadSheetId = readFromFile();
 
-			List<List<Object>> values = parseValueRange.createValueRange(category);
-			ValueRange data = new ValueRange()
-					.setValues(values);
+
+			BatchUpdateValuesRequest batchUpdateValuesRequest = new BatchUpdateValuesRequest()
+					.setValueInputOption("USER_ENTERED")
+					.setData(data);
+
+			BatchUpdateValuesResponse response = sheets.spreadsheets().values().batchUpdate(
+					spreadSheetId, batchUpdateValuesRequest).execute();
+
 
 			//TODO either category range and all rows, or row ranges and hasChanged and cellUpdate
 			//UpdateValuesResponse response = sheets.spreadsheets().values().update()
@@ -130,5 +148,11 @@ public class SaveDataTask extends AsyncTask {
 		}
 
 		return spreadsheetId;
+	}
+
+	protected List<Object> prepareRow(Block.Category.Row row) {
+		List<Object> value = new ArrayList<>();
+		value.add(row.getData());
+		return value;
 	}
 }

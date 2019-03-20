@@ -35,9 +35,9 @@ public class Block implements Serializable {
 		return categories.get(position);
 	}
 
-	public void addRow(int categoryPosition, String subCategory, String data) {
+	public void addRow(int categoryPosition, String subCategory, String data, String rowRow) {
 		Category category = this.getCategory(categoryPosition);
-		category.createRow(subCategory, data);
+		category.createRow(subCategory, data, rowRow);
 	}
 
 	public Category.Row getRow(int categoryPosition, int rowPosition) {
@@ -75,8 +75,8 @@ public class Block implements Serializable {
 			return this.rows;
 		}
 
-		private void createRow(String subCategory, String data) {
-			Row row = new Row(subCategory, data);
+		private void createRow(String subCategory, String data, String rowRow) {
+			Row row = new Row(subCategory, data, rowRow);
 			rows.add(row);
 		}
 
@@ -87,6 +87,12 @@ public class Block implements Serializable {
 		private void addData(String newdata, int rowPosition) {
 			Row row = getRow(rowPosition);
 			row.addData(newdata);
+		}
+
+		public void resetHasChanged() {
+			for (Row row: this.rows) {
+				row.resetHasChanged();
+			}
 		}
 
 		private Integer getDataInteger(int rowPosition){
@@ -105,12 +111,13 @@ public class Block implements Serializable {
 			private Boolean hasChanged = false;
 			private String rowRow;
 
-			private Row(String subCategory, String data) {
+			private Row(String subCategory, String data, String rowRow) {
 				this.subCategory = subCategory;
 				this.data = data;
 				this.dataInteger = 0;
 				createDataInteger(data);
 				this.add = "";
+				this.rowRow = rowRow;
 			}
 			public Integer getDataInteger() {
 				return this.dataInteger;
@@ -144,7 +151,11 @@ public class Block implements Serializable {
 			}
 
 			public void setHasChanged() {
-				this.hasChanged = !this.hasChanged;
+				this.hasChanged = Boolean.TRUE;
+			}
+
+			public void resetHasChanged(){
+				this.hasChanged = Boolean.FALSE;
 			}
 
 			public String getRowRow() {
