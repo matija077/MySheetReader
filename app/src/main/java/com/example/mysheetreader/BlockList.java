@@ -62,7 +62,7 @@ public class BlockList extends AppCompatActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == BLOCK_REQUEST) {
-			if (resultCode ==RESULT_OK) {
+			if (resultCode ==BLOCK_REQUEST) {
 				IntentHelper intentHelper = new IntentHelper(getApplication());
 				List<Object> objects = intentHelper.readFromIntentBlockList(data, getResources().
 						getString(R.string.category_key));

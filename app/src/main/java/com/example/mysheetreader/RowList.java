@@ -221,15 +221,13 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 
 	@Override
 	public void onBackPressed() {
-		super.onBackPressed();
-
 		Intent intent = new Intent();
 		IntentHelper intentHelper = new IntentHelper(getApplication());
 		Bundle bundle = intentHelper.prepareIntentCategory(category, positionInParentActivity);
 		intent.putExtras(bundle);
 
 		setResult(CATEGROY_REQUEST, intent);
-
-		finish();
+		super.onBackPressed();
+		//finish();
 	}
 }

@@ -67,7 +67,6 @@ public class CategoryList extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		super.onBackPressed();
 
 		Intent intent = new Intent();
 		IntentHelper intentHelper = new IntentHelper(getApplication());
@@ -75,8 +74,8 @@ public class CategoryList extends AppCompatActivity {
 		intent.putExtras(bundle);
 
 		setResult(BLOCK_REQUEST, intent);
-
-		finish();
+		super.onBackPressed();
+		//finish();
 	}
 
 	@Override
@@ -84,7 +83,7 @@ public class CategoryList extends AppCompatActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == CATEGROY_REQUEST) {
-			if (resultCode ==RESULT_OK) {
+			if (resultCode ==CATEGROY_REQUEST) {
 				IntentHelper intentHelper = new IntentHelper(getApplication());
 				List<Object> objects = intentHelper.readFromIntentBlockList(data, getResources()
 						.getString(R.string.row_key));
