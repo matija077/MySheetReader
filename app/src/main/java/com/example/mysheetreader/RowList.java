@@ -53,6 +53,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 				.getString(R.string.row_key));
 		category = (Block.Category) objects.get(0);
 		positionInParentActivity = (int) objects.get(1);
+		getSupportActionBar().setTitle(category.getName());
 
 		Log.d(TAG, "ola");
 

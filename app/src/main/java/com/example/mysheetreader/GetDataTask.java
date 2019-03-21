@@ -120,7 +120,8 @@ public class GetDataTask extends AsyncTask {
 				ValueRange result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
 						.setValueRenderOption("FORMULA")
 						.execute();
-				blocks.add(new Block("Block" + String.valueOf(i)));
+				// blocks ids start from 1
+				blocks.add(new Block("Block" + String.valueOf(i+1)));
 				//some problems with size
 				Integer size =  blocks.size() - 1;
 				Block randomBlock = blocks.get(size);
