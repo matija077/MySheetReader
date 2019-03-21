@@ -205,7 +205,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 			@Override
 			public void onTaskFailed(Exception exception) {
 				Snackbar snackbar = Snackbar.make(coordinatorLayout,
-						R.string.snkacbar_row_list_activity_update, Snackbar.LENGTH_LONG);
+						R.string.snkacbar_row_list_activity_error, Snackbar.LENGTH_LONG);
 				snackbar.show();
 			}
 		}).execute(map, this);

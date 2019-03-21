@@ -125,6 +125,7 @@ public class GetDataTask extends AsyncTask {
 				Integer size =  blocks.size() - 1;
 				Block randomBlock = blocks.get(size);
 				parseValueRange.parseRange(result, randomBlock);
+				List<ValueRange> ranges = new ArrayList<>();
 				do {
 					//variableLength we take one row after the last one and increase by one until
 					//we return from parserange or size of result is 2 beacuse there will be no values.
@@ -133,11 +134,13 @@ public class GetDataTask extends AsyncTask {
 					result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
 							.setValueRenderOption("FORMULA")
 							.execute();
-					size =  blocks.size() - 1;
-					randomBlock = blocks.get(size);
-					parseValueRange.parseRange(result, randomBlock);
+					ranges.add(result);
 					rowStartVariable = String.valueOf(Integer.parseInt(rowStartVariable) + 1);
 				}while(result.size()==3);
+
+				size =  blocks.size() - 1;
+				randomBlock = blocks.get(size);
+				parseValueRange.parseListOfRanges(ranges, randomBlock);
 
 				//mwe are now on the first empty row. we move to second.
 				rowStartVariable = String.valueOf(Integer.parseInt(rowStartVariable) + 1);

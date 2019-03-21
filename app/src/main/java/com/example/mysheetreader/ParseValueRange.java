@@ -11,6 +11,12 @@ public class ParseValueRange {
 	public ParseValueRange(){
 	}
 
+	public void parseListOfRanges(List<ValueRange> valueRanges, Block block) {
+		for (ValueRange valueRange:valueRanges) {
+			parseRange(valueRange, block);
+		}
+	}
+
 	public void parseRange(ValueRange valueRange, Block block) {
 		List<List<Object>> values = valueRange.getValues();
 		String range = valueRange.getRange();
