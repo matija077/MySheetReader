@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	SignInButton signInButton;
 	TextView test;
 	CoordinatorLayout coordinatorLayout;
+	ProgressBar progressBar;
 
 
 	@Override
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		signInButton = findViewById(R.id.sign_in_button);
 		test = findViewById(R.id.test);
 		coordinatorLayout = findViewById(R.id.mainActivityCordinatorLayout);
+		progressBar = findViewById(R.id.progress_bar);
 
 		FloatingActionButton fab = findViewById(R.id.fab);
 		fab.setOnClickListener(this);
@@ -157,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						snackbar.show();
 
 					}
-				});
+				}, progressBar);
 				urlDialogFragment.show(fragmentManager, "name");
 				break;
 		}
@@ -199,14 +202,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	public static class UrlDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 		View view;
 		static TaskTracer taskTracer;
+		static ProgressBar progressBar;
 
 		public UrlDialogFragment() {
 
 		}
 
-		public static UrlDialogFragment newInstance(TaskTracer _taskTracer){
+		public static UrlDialogFragment newInstance(TaskTracer _taskTracer, ProgressBar _progressBar){
 			UrlDialogFragment urlDialogFragment = new UrlDialogFragment();
 			taskTracer = _taskTracer;
+			progressBar = _progressBar;
 			return urlDialogFragment;
 		}
 
@@ -247,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			params.put("url", urlView.getText().toString());
 
 			if (which == DialogInterface.BUTTON_POSITIVE) {
+				progressBar.setVisibility(View.VISIBLE);
 				new GetDataTask(new TaskTracer() {
 					@Override
 					public void onTaskCompleted(Object object) {
@@ -254,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.mainActivityCordinatorLayout),
 								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
 						snackbar.show();*/
+						progressBar.setVisibility(View.GONE);
 						taskTracer.onTaskCompleted(object);
 					}
 
@@ -264,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 					@Override
 					public void onTaskFailed(Exception exception) {
+						progressBar.setVisibility(View.GONE);
 						taskTracer.onTaskFailed(exception);
 					}
 				}).execute(params, getActivity());

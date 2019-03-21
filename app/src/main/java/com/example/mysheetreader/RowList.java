@@ -222,6 +222,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		this.category.resetHasChanged();
 	}
 
+	// https://stackoverflow.com/questions/2679250/setresult-does-not-work-when-back-button-pressed
 	@Override
 	public void onBackPressed() {
 		//call super last so it's not actually finished before you can setResult

@@ -62,6 +62,12 @@ public class GetDataTask extends AsyncTask {
 		this.taskTracer = taskTracer;
 	}
 
+
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+	}
+
 	@Override
 	protected Object doInBackground(Object... params) {
 		Map map = (Map) params[0];
