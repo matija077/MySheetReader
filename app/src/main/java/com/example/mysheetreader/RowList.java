@@ -191,6 +191,9 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		new SaveDataTask(new TaskTracer(){
 			@Override
 			public void onTaskCompleted(Object object) {
+				Snackbar snackbar = Snackbar.make(coordinatorLayout,
+						R.string.snkacbar_row_list_activity_update, Snackbar.LENGTH_LONG);
+				snackbar.show();
 				resetHasChanged();;
 			}
 
@@ -201,15 +204,14 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 
 			@Override
 			public void onTaskFailed(Exception exception) {
-
+				Snackbar snackbar = Snackbar.make(coordinatorLayout,
+						R.string.snkacbar_row_list_activity_update, Snackbar.LENGTH_LONG);
+				snackbar.show();
 			}
 		}).execute(map, this);
 	}
 
 	private void resetHasChanged(){
 		this.category.resetHasChanged();
-		Snackbar snackbar = Snackbar.make(coordinatorLayout,
-				R.string.snkacbar_row_list_activity_update, Snackbar.LENGTH_LONG);
-		snackbar.show();
 	}
 }

@@ -5,6 +5,7 @@
     <string name="snackbar_main_activity_get">Data fetched</string>
     <string name="snackbar_main_activity_error">Failed to fetch data</string>
     <string name="snkacbar_row_list_activity_update">Data updated</string>
+    <string name="snkacbar_row_list_activity_error">Data update failed</string>
     <string name="blocks_Key">blocks</string>
     <string name="category_key">categories</string>
     <string name="row_key">rows</string>
