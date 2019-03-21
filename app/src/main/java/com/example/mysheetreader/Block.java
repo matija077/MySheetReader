@@ -35,6 +35,10 @@ public class Block implements Serializable {
 		return categories.get(position);
 	}
 
+	public void setcategory(int position, Block.Category category) {
+		this.categories.set(position, category);
+	}
+
 	public void addRow(int categoryPosition, String subCategory, String data, String rowRow) {
 		Category category = this.getCategory(categoryPosition);
 		category.createRow(subCategory, data, rowRow);
