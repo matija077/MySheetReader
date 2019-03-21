@@ -221,6 +221,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 
 	@Override
 	public void onBackPressed() {
+		//call super last so it's not actually finished before you can setResult
 		Intent intent = new Intent();
 		IntentHelper intentHelper = new IntentHelper(getApplication());
 		Bundle bundle = intentHelper.prepareIntentCategory(category, positionInParentActivity);
