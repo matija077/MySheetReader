@@ -17,4 +17,5 @@
     <string name="data_change_fragmebnt_positive_button">Apply</string>
     <string name="data_change_fragment_negative_button">Cancel</string>
     <string name="file_name">MySheetReaderFile</string>
+    <string name="bundle_position">bundle_posiiton</string>
 </resources>

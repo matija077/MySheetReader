@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -33,6 +34,8 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 	private Button applyButton;
 	private ListView listView;
 	private CoordinatorLayout coordinatorLayout;
+	public static int positionInParentActivity;
+	public static final int CATEGROY_REQUEST = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +48,12 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 
 		applyButton.setOnClickListener(this);
 		Intent intent = getIntent();
-		Bundle bundle = intent.getExtras();
-		Object object = bundle.getSerializable(getResources().getString(R.string.row_key));
-		category = (Block.Category) object;
+		IntentHelper intentHelper = new IntentHelper(getApplication());
+		List<Object> objects = intentHelper.readFromIntentBlockList(intent, getResources()
+				.getString(R.string.row_key));
+		category = (Block.Category) objects.get(0);
+		positionInParentActivity = (int) objects.get(1);
+
 		Log.d(TAG, "ola");
 
 		try {
@@ -213,5 +219,18 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 
 	private void resetHasChanged(){
 		this.category.resetHasChanged();
+	}
+
+	@Override
+	public void onBackPressed() {
+		//call super last so it's not actually finished before you can setResult
+		Intent intent = new Intent();
+		IntentHelper intentHelper = new IntentHelper(getApplication());
+		Bundle bundle = intentHelper.prepareIntentCategory(category, positionInParentActivity);
+		intent.putExtras(bundle);
+
+		setResult(CATEGROY_REQUEST, intent);
+		super.onBackPressed();
+		//finish();
 	}
 }

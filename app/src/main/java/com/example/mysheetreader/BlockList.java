@@ -15,6 +15,7 @@ import java.util.List;
 public class BlockList extends AppCompatActivity {
 	List<Block> blocks;
 	private static final String TAG = "BlockList";
+	public static final int BLOCK_REQUEST = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +42,11 @@ public class BlockList extends AppCompatActivity {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					Log.d(TAG, "ola");
 					Intent intent = new Intent(BlockList.this, CategoryList.class);
-					Bundle bundle = new Bundle();
-					bundle.putSerializable(getResources().getString(R.string.category_key),
-							blocks.get(position));
+					IntentHelper intentHelper = new IntentHelper(getApplication());
+					Bundle bundle = intentHelper.prepareIntentBlockList(blocks, position);
 					intent.putExtras(bundle);
 					try {
-						startActivity(intent);
+						startActivityForResult(intent, BLOCK_REQUEST);
 					} catch(Exception exception) {
 						Log.e(TAG, String.valueOf(exception));
 					}
@@ -57,4 +57,19 @@ public class BlockList extends AppCompatActivity {
 		}
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == BLOCK_REQUEST) {
+			if (resultCode ==BLOCK_REQUEST) {
+				IntentHelper intentHelper = new IntentHelper(getApplication());
+				List<Object> objects = intentHelper.readFromIntentBlockList(data, getResources().
+						getString(R.string.category_key));
+				int position = (int) objects.get(1);
+				Block block = (Block) objects.get(0);
+				this.blocks.set(position, block);
+			}
+		}
+	}
 }
