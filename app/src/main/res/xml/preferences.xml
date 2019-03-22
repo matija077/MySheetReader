@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <android.support.v7.preference.SwitchPreferenceCompat
-    android:defaultValue="true"
+        android:defaultValue="true"
         android:key="switch_preference_url"
         android:title="Save url"
         android:summary="@string/preference_sumarry_url"/>

@@ -94,9 +94,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		/*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		urlSharedPreferences = sharedPreferences.getString(getResources().getString(R.string.preference_url_key), "");
-		maxRows = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);
+		maxRows = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);*/
 	}
 
 	@Override
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
 			Intent intent = new Intent(this, SettingsActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
 			return true;
 		}

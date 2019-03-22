@@ -26,6 +26,7 @@ import android.widget.ListView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 public class RowList extends AppCompatActivity implements View.OnClickListener {
@@ -153,8 +154,11 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			if (which==DialogInterface.BUTTON_POSITIVE) {
-				changeData(view);
-				taskTracer.onTaskCompleted(Boolean.TRUE);
+				if (changeData(view)) {
+					taskTracer.onTaskCompleted(Boolean.TRUE);
+				} else {
+					ChangeDataFragment.this.getDialog().cancel();
+				}
 			} else if (which == DialogInterface.BUTTON_NEGATIVE){
 				ChangeDataFragment.this.getDialog().cancel();
 			}
@@ -165,12 +169,22 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 			editText.setText(row.getData());
 		}
 
-		private void changeData(View view){
+		private Boolean changeData(View view){
 			EditText editText = view.findViewById(R.id.dialog_data_change);
 			String data = String.valueOf(editText.getText());
+
+			/*if (!checkDataRegex(data)) {
+				return Boolean.FALSE;
+			}*/
+
 			row.setData(data);
 			row.setHasChanged();
+
+			return Boolean.TRUE;
 		}
+
+		/*private Boolean checkDataRegex(String data) {
+		}*/
 	}
 
 	// iterate through rowArrayAdapter, find if addData editRext is not empty. If it's not emppty
