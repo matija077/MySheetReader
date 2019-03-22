@@ -18,4 +18,7 @@
     <string name="data_change_fragment_negative_button">Cancel</string>
     <string name="file_name">MySheetReaderFile</string>
     <string name="bundle_position">bundle_posiiton</string>
+    <string name="preference_file_key">preference_my_sheet_reader</string>
+    <string name="preference_max_rowss_key">max_rows</string>
+    <string name="preference_url_key">url</string>
 </resources>

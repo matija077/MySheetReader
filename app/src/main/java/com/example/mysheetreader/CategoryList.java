@@ -40,6 +40,7 @@ public class CategoryList extends AppCompatActivity {
 		block = (Block) objects.get(0);
 		positionInParentActivity = (int) objects.get(1);
 		Log.d(TAG, "ola");
+		// https://stackoverflow.com/questions/26486730/in-android-app-toolbar-settitle-method-has-no-effect-application-name-is-shown/32582780
 		getSupportActionBar().setTitle(block.getBlockId());
 
 		try {

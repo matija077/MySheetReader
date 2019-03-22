@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	TextView test;
 	CoordinatorLayout coordinatorLayout;
 	ProgressBar progressBar;
+	static String urlSharedPreferences;
+	static String maxRows;
 
 
 	@Override
@@ -82,6 +85,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				.build();
 
 		mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+		SharedPreferences sharedPreferences = this.getSharedPreferences(getString(
+				R.string.preference_file_key), this.MODE_PRIVATE);
+		urlSharedPreferences = getResources().getString(R.string.preference_url_key);
+		maxRows = getResources().getString(R.string.preference_max_rowss_key);
 	}
 
 	@Override
