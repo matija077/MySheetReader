@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
 	@Override
 	public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-		setPreferencesFromResource(R.xml.preferences, rootKey);
+		try {
+			setPreferencesFromResource(R.xml.preferences, rootKey);
+		} catch (Exception e) {
+			Log.d("a", String.valueOf(e));
+		}
 
 	}
 
