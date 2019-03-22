@@ -19,6 +19,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	CoordinatorLayout coordinatorLayout;
 	ProgressBar progressBar;
 	static String urlSharedPreferences;
-	static String maxRows;
+	static int maxRows;
 
 
 	@Override
@@ -86,10 +87,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-		SharedPreferences sharedPreferences = this.getSharedPreferences(getString(
+		/*SharedPreferences sharedPreferences = this.getSharedPreferences(getString(
 				R.string.preference_file_key), this.MODE_PRIVATE);
 		urlSharedPreferences = getResources().getString(R.string.preference_url_key);
-		maxRows = getResources().getString(R.string.preference_max_rowss_key);
+		maxRows = getResources().getString(R.string.preference_max_rowss_key);*/
+
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		urlSharedPreferences = sharedPreferences.getString(getResources().getString(R.string.preference_url_key), "");
+		maxRows = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);
 	}
 
 	@Override
@@ -133,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
 			return true;
 		}
 
@@ -242,6 +251,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			LayoutInflater inflater = getActivity().getLayoutInflater();
 
 			view = inflater.inflate(R.layout.dialog_url, null);
+			EditText urlView = view.findViewById(R.id.text_dialog_url);
+			urlView.setText(urlSharedPreferences);
 
 			builder
 					.setView(view)

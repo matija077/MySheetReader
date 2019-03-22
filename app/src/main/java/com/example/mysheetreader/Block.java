@@ -53,8 +53,8 @@ public class Block implements Serializable {
 		category.addData(newData, rowPosition);
 	}
 
-	public Integer getDataInteger(int categoryPosition, int rowPosotion) {
-		return getCategory(categoryPosition).getDataInteger(rowPosotion);
+	public Double getDataInteger(int categoryPosition, int rowPosotion) {
+		return getCategory(categoryPosition).getDataDouble(rowPosotion);
 	}
 
 	public String getData(int categoryPosition, int rowPosotion) {
@@ -99,8 +99,8 @@ public class Block implements Serializable {
 			}
 		}
 
-		private Integer getDataInteger(int rowPosition){
-			return getRow(rowPosition).getDataInteger();
+		private Double getDataDouble(int rowPosition){
+			return getRow(rowPosition).getDataDouble();
 		}
 
 		private String getData(int rowPosition){
@@ -110,7 +110,7 @@ public class Block implements Serializable {
 		public class Row implements  Serializable {
 			private String subCategory;
 			private String data;
-			private Integer dataInteger;
+			private Double dataInteger;
 			private String add;
 			private Boolean hasChanged = false;
 			private String rowRow;
@@ -118,12 +118,12 @@ public class Block implements Serializable {
 			private Row(String subCategory, String data, String rowRow) {
 				this.subCategory = subCategory;
 				this.data = data;
-				this.dataInteger = 0;
+				this.dataInteger = 0.0;
 				createDataInteger(data);
 				this.add = "";
 				this.rowRow = rowRow;
 			}
-			public Integer getDataInteger() {
+			public Double getDataDouble() {
 				return this.dataInteger;
 			}
 
@@ -146,7 +146,7 @@ public class Block implements Serializable {
 			public void setData(String data) {
 				this.data = data;
 				//resetting dataInteger so we don't have to change createDatatInteger
-				this.dataInteger = 0;
+				this.dataInteger = 0.0;
 				createDataInteger(data);
 			}
 
@@ -168,11 +168,11 @@ public class Block implements Serializable {
 
 			public void addData(String newData) {
 				this.data += "+" + newData;
-				addDataInteger(newData);
+				addDataDouble(newData);
 			}
 
-			private void addDataInteger(String newdata) {
-				this.dataInteger += Integer.valueOf(newdata);
+			private void addDataDouble(String newdata) {
+				this.dataInteger += Double.valueOf(newdata);
 			}
 
 			private void createDataInteger(String data) {

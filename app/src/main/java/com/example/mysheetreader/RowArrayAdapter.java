@@ -40,7 +40,7 @@ public class RowArrayAdapter extends ArrayAdapter {
 		textViewSubCategory.setText(rows.get(position).getSubCategory());
 
 		TextView textViewDataInteger = view.findViewById(R.id.data_row_data_integer);
-		textViewDataInteger.setText(String.valueOf(rows.get(position).getDataInteger()));
+		textViewDataInteger.setText(String.valueOf(rows.get(position).getDataDouble()));
 		textViewDataInteger.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -61,7 +61,7 @@ public class RowArrayAdapter extends ArrayAdapter {
 		TextView textViewDataInteger = view.findViewById(R.id.data_row_data_integer);
 		rows.get(position).addData(data);
 		rows.get(position).setHasChanged();
-		textViewDataInteger.setText(String.valueOf(rows.get(position).getDataInteger()));
+		textViewDataInteger.setText(String.valueOf(rows.get(position).getDataDouble()));
 
 		EditText editText = view.findViewById(R.id.data_row_add);
 		editText.setText("");
