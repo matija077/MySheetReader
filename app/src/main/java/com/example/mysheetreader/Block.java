@@ -39,9 +39,9 @@ public class Block implements Serializable {
 		this.categories.set(position, category);
 	}
 
-	public void addRow(int categoryPosition, String subCategory, String data, String rowRow) {
+	public void addRow(int categoryPosition, String subCategory, String data, Double dataDouble, String rowRow) {
 		Category category = this.getCategory(categoryPosition);
-		category.createRow(subCategory, data, rowRow);
+		category.createRow(subCategory, data, dataDouble, rowRow);
 	}
 
 	public Category.Row getRow(int categoryPosition, int rowPosition) {
@@ -79,8 +79,8 @@ public class Block implements Serializable {
 			return this.rows;
 		}
 
-		private void createRow(String subCategory, String data, String rowRow) {
-			Row row = new Row(subCategory, data, rowRow);
+		private void createRow(String subCategory, String data, Double dataDouble, String rowRow) {
+			Row row = new Row(subCategory, data, dataDouble, rowRow);
 			rows.add(row);
 		}
 
@@ -110,21 +110,21 @@ public class Block implements Serializable {
 		public class Row implements  Serializable {
 			private String subCategory;
 			private String data;
-			private Double dataInteger;
+			private Double dataDouble;
 			private String add;
 			private Boolean hasChanged = false;
 			private String rowRow;
 
-			private Row(String subCategory, String data, String rowRow) {
+			private Row(String subCategory, String data, Double dataDouble, String rowRow) {
 				this.subCategory = subCategory;
 				this.data = data;
-				this.dataInteger = 0.0;
-				createDataInteger(data);
+				this.dataDouble = dataDouble;
+				//reateDataInteger(data);
 				this.add = "";
 				this.rowRow = rowRow;
 			}
 			public Double getDataDouble() {
-				return this.dataInteger;
+				return this.dataDouble;
 			}
 
 			public String getData() {
@@ -146,7 +146,7 @@ public class Block implements Serializable {
 			public void setData(String data) {
 				this.data = data;
 				//resetting dataInteger so we don't have to change createDatatInteger
-				this.dataInteger = 0.0;
+				this.dataDouble = 0.0;
 				createDataInteger(data);
 			}
 
@@ -172,7 +172,7 @@ public class Block implements Serializable {
 			}
 
 			private void addDataDouble(String newdata) {
-				this.dataInteger += Double.valueOf(newdata);
+				this.dataDouble += Double.valueOf(newdata);
 			}
 
 			private void createDataInteger(String data) {
@@ -182,7 +182,7 @@ public class Block implements Serializable {
 				for (String substring:subStrings) {
 					//remove all whitespaces
 					substring = substring.replaceAll("\\s+", "");
-					this.dataInteger += Integer.valueOf(substring);
+					this.dataDouble += Integer.valueOf(substring);
 				}
 			}
 		}

@@ -94,9 +94,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-		/*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		urlSharedPreferences = sharedPreferences.getString(getResources().getString(R.string.preference_url_key), "");
-		maxRows = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);*/
+		maxRows = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);
 	}
 
 	@Override
@@ -270,6 +270,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			EditText urlView = view.findViewById(R.id.text_dialog_url);
 			//text is actually spanable string builder
 			params.put("url", urlView.getText().toString());
+			params.put("maxRows", maxRows);
 
 			if (which == DialogInterface.BUTTON_POSITIVE) {
 				progressBar.setVisibility(View.VISIBLE);

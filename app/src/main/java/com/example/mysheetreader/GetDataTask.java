@@ -73,6 +73,7 @@ public class GetDataTask extends AsyncTask {
 		Map map = (Map) params[0];
 		try {
 			String url = (String) map.get("url");
+			String maxRows = (String) String.valueOf(map.get("maxRows"));
 			context = (Context) params[1];
 			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
 
@@ -84,9 +85,11 @@ public class GetDataTask extends AsyncTask {
 			String columnStart = "A";
 			String columnEnd = "C";
 			String startRow = "3";
+
 			String endRowFixedLenght = String.valueOf(Integer.parseInt(startRow) +
 					numberOfRowsFixedLenght);
-			String dataRange = columnStart + startRow + ":" + columnEnd + endRowFixedLenght;
+			//String dataRange = columnStart + startRow + ":" + columnEnd + endRowFixedLenght;
+			String dataRange = "A3" + ":" + "C" + maxRows;
 
 
 			GoogleAccountCredential credential =
@@ -117,7 +120,20 @@ public class GetDataTask extends AsyncTask {
 			sheetsTemp = null;
 			requuestSpreadsheet = null;
 
-			String rowStartVariable = endRowFixedLenght;
+
+			List<ValueRange> valueRanges = new ArrayList<>();
+			ValueRange result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
+					.setValueRenderOption("FORMULA")
+					.execute();
+			valueRanges.add(result);
+			result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
+					.setValueRenderOption("UNFORMATTED_VALUE")
+					.execute();
+			valueRanges.add(result);
+
+			ParseValueRange parseValueRange = new ParseValueRange();
+			blocks = parseValueRange.parseListOfRangesGetData(valueRanges);
+			/*String rowStartVariable = endRowFixedLenght;
 			blocks = new ArrayList<>();
 			ParseValueRange parseValueRange = new ParseValueRange();
 			// for fixedSize we fetch everything and parse it
@@ -155,7 +171,7 @@ public class GetDataTask extends AsyncTask {
 						rowStartVariable, 1, numberOfRowsFixedLenght + 1);
 				// after setting dataRange we set rowStartVariable to last row in fixedLength
 				rowStartVariable = String.valueOf(Integer.parseInt(rowStartVariable) + numberOfRowsFixedLenght + 1);
-			}
+			}*/
 
 
 			Log.d(TAG, "opa");
