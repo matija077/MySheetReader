@@ -217,6 +217,34 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 	// than add that data to existing one and clean addData editText. Notify for changes otherwise
 	// it's gonna chahge only on editText clicked again
 	private void applyChanges() {
+		Map map = new HashMap();
+		map.put(getResources().getString(R.string.row_key), category);
+		new SaveDataTask(new TaskTracer(){
+			@Override
+			public void onTaskCompleted(Object object) {
+				Snackbar snackbar = Snackbar.make(coordinatorLayout,
+						R.string.snkacbar_row_list_activity_update, Snackbar.LENGTH_LONG);
+				snackbar.show();
+				changeDataOnClient();
+				//resetHasChanged();;
+			}
+
+			@Override
+			public void onTaskInProgress() {
+
+			}
+
+			@Override
+			public void onTaskFailed(Exception exception) {
+				Snackbar snackbar = Snackbar.make(coordinatorLayout,
+						R.string.snkacbar_row_list_activity_error, Snackbar.LENGTH_LONG);
+				snackbar.show();
+			}
+		}).execute(map, this);
+
+	}
+
+	private void changeDataOnClient() {
 		RowArrayAdapter rowArrayAdapter = (RowArrayAdapter) listView.getAdapter();
 		for (int i=0; i<rowArrayAdapter.getCount(); i++) {
 			View view = rowArrayAdapter.getView(i, null, listView);
@@ -232,30 +260,6 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		}
 		//TODO move to the inside of the loop ?
 		rowArrayAdapter.notifyDataSetChanged();
-
-		Map map = new HashMap();
-		map.put(getResources().getString(R.string.row_key), category);
-		new SaveDataTask(new TaskTracer(){
-			@Override
-			public void onTaskCompleted(Object object) {
-				Snackbar snackbar = Snackbar.make(coordinatorLayout,
-						R.string.snkacbar_row_list_activity_update, Snackbar.LENGTH_LONG);
-				snackbar.show();
-				resetHasChanged();;
-			}
-
-			@Override
-			public void onTaskInProgress() {
-
-			}
-
-			@Override
-			public void onTaskFailed(Exception exception) {
-				Snackbar snackbar = Snackbar.make(coordinatorLayout,
-						R.string.snkacbar_row_list_activity_error, Snackbar.LENGTH_LONG);
-				snackbar.show();
-			}
-		}).execute(map, this);
 	}
 
 	private void resetHasChanged(){

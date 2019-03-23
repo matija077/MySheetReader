@@ -139,7 +139,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 
 			List<ValueRange> data = new ArrayList<>();
 			for (Block.Category.Row row : category.getRows()) {
-				if (row.getHasChanged() == Boolean.TRUE) {
+				if (row.getAdd() != "") {
 					List<List<Object>> values = new ArrayList<>();
 					List<Object> value = prepareRow(row);
 					values.add(value);

@@ -20,7 +20,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 	@Override
 	public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 		try {
-			setPreferencesFromResource(R.xml.preferences, rootKey);
+			addPreferencesFromResource(R.xml.preferences);
 		} catch (Exception e) {
 			Log.d("a", String.valueOf(e));
 		}
