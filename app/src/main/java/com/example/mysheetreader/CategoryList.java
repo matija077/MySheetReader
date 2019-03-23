@@ -43,6 +43,14 @@ public class CategoryList extends AppCompatActivity {
 		// https://stackoverflow.com/questions/26486730/in-android-app-toolbar-settitle-method-has-no-effect-application-name-is-shown/32582780
 		getSupportActionBar().setTitle(block.getBlockId());
 
+		toolbar.setNavigationIcon(android.support.v7.appcompat.R.drawable.abc_ic_ab_back_material);
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				onBackPressed();
+			}
+		});
+
 		try {
 			CategoryListAdapter categoryListAdapter = new CategoryListAdapter(this, R.layout.row,
 					block.getCategories());

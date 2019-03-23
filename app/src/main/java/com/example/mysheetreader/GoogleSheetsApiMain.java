@@ -139,9 +139,15 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 
 			List<ValueRange> data = new ArrayList<>();
 			for (Block.Category.Row row : category.getRows()) {
-				if (row.getAdd() != "") {
+				if (!row.getAdd().equals("")) {
 					List<List<Object>> values = new ArrayList<>();
-					List<Object> value = prepareRow(row);
+					Block block = new Block("temp");
+					block.createCategory("temp");
+					block.addRow(0, row.getSubCategory(), row.getData(),
+							row.getDataDouble(), row.getRowRow());
+					Block.Category.Row rowToSave = block.getRow(0, 0);
+					rowToSave.addData(row.getAdd());
+					List<Object> value = prepareRow(rowToSave);
 					values.add(value);
 					data.add(new ValueRange()
 							.setRange(row.getRowRow())

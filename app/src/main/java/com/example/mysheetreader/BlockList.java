@@ -37,6 +37,14 @@ public class BlockList extends AppCompatActivity {
 			ListView listView = findViewById(R.id.block_list_view);
 			listView.setAdapter(blockListAdapter);
 
+			toolbar.setNavigationIcon(android.support.v7.appcompat.R.drawable.abc_ic_ab_back_material);
+			toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					onBackPressed();
+				}
+			});
+
 			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
