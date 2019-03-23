@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	TextView test;
 	CoordinatorLayout coordinatorLayout;
 	ProgressBar progressBar;
-	static String urlSharedPreferences;
-	static int maxRows;
-
+	SharedPreferences sharedPreferences;
+	static String urlToSave;
+	static String urlDefault;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		maxRows = getResources().getString(R.string.preference_max_rowss_key);*/
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		urlSharedPreferences = sharedPreferences.getString(getResources().getString(R.string.preference_url_key), "");
-		maxRows = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);
+		sharedPreferences = getSharedPreferences(getResources().getString(R.string.preference_file_key), MODE_PRIVATE);
 	}
 
 	@Override
@@ -125,6 +122,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		urlDefault = sharedPreferences.getString(getResources().getString
+				(R.string.preference_url_key), "");
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -140,9 +151,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
-			Intent intent = new Intent(this, SettingsActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(intent);
+			try {
+				Intent intent = new Intent(this, SettingsActivity.class);
+				//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+				/*getSupportFragmentManager()
+						.beginTransaction()
+						.replace(android.R.id.content, new SettingsFragment())
+						.commit();*/
+			} catch(Exception exception) {
+				Log.e(TAG, "ola");
+
+			}
 			return true;
 		}
 
@@ -163,6 +183,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						Snackbar snackbar = Snackbar.make(coordinatorLayout,
 								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
 						snackbar.show();
+						SharedPreferences sharedDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+						Boolean urlBoolean = sharedDefaultPreferences.getBoolean("switch_preference_url", Boolean.FALSE);
+						if (urlBoolean == Boolean.TRUE) {
+							saveUrl();
+						} /*else {
+							clearUrl();
+						}*/
 						showData(object);
 					}
 
@@ -221,6 +248,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		View view;
 		static TaskTracer taskTracer;
 		static ProgressBar progressBar;
+		static String maxRowsDIalog;
+		static Boolean urlBoolean;
 
 		public UrlDialogFragment() {
 
@@ -252,8 +281,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			LayoutInflater inflater = getActivity().getLayoutInflater();
 
 			view = inflater.inflate(R.layout.dialog_url, null);
-			EditText urlView = view.findViewById(R.id.text_dialog_url);
-			urlView.setText(urlSharedPreferences);
+			SharedPreferences sharedDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+			/*urlSharedPreferences = sharedPreferences.getString(getResources().getString(R.string.preference_url_key), "");
+			maxRowsDIalog = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);*/
+			urlBoolean = sharedDefaultPreferences.getBoolean("switch_preference_url", Boolean.FALSE);
+			maxRowsDIalog = sharedDefaultPreferences.getString("edit_text_preference_max_rows", "400");
+			if (urlBoolean) {
+				if (!urlDefault.equals("")) {
+					EditText urlView = view.findViewById(R.id.text_dialog_url);
+					urlView.setText(urlDefault);
+				}
+			}
 
 			builder
 					.setView(view)
@@ -267,10 +305,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			Map params = new HashMap();
-			EditText urlView = view.findViewById(R.id.text_dialog_url);
+			final EditText urlView = view.findViewById(R.id.text_dialog_url);
 			//text is actually spanable string builder
 			params.put("url", urlView.getText().toString());
-			params.put("maxRows", maxRows);
+			params.put("maxRows", maxRowsDIalog);
 
 			if (which == DialogInterface.BUTTON_POSITIVE) {
 				progressBar.setVisibility(View.VISIBLE);
@@ -282,6 +320,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
 						snackbar.show();*/
 						progressBar.setVisibility(View.GONE);
+						//object = urlView.getText().toString();
+						urlToSave = urlView.getText().toString();
 						taskTracer.onTaskCompleted(object);
 					}
 
@@ -300,6 +340,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				UrlDialogFragment.this.getDialog().cancel();
 			}
 		}
+	}
+
+	public void saveUrl() {
+		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+		preferencesEditor.putString(getResources().getString(R.string.preference_url_key),
+				String.valueOf(urlToSave));
+		preferencesEditor.apply();
+	}
+
+	public void clearUrl() {
+		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+		preferencesEditor.clear();
+		preferencesEditor.apply();
 	}
 
 	public void showData(Object object){
