@@ -34,7 +34,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 	private static final String TAG = "RowList";
 	private Button applyButton;
 	private ListView listView;
-	private CoordinatorLayout coordinatorLayout;
+	private static CoordinatorLayout coordinatorLayout;
 	public static int positionInParentActivity;
 	public static final int CATEGROY_REQUEST = 2;
 
@@ -118,6 +118,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		public static ChangeDataFragment newInstance(Block.Category.Row _row, TaskTracer _taskTracer) {
 			row = _row;
 			taskTracer = _taskTracer;
+			Boolean isUpdated = Boolean.FALSE;
 			ChangeDataFragment changeDataFragment = new ChangeDataFragment();
 			return changeDataFragment;
 		}
@@ -154,11 +155,12 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			if (which==DialogInterface.BUTTON_POSITIVE) {
-				if (changeData(view)) {
+				/*if (changeData(view)) {
 					taskTracer.onTaskCompleted(Boolean.TRUE);
 				} else {
 					ChangeDataFragment.this.getDialog().cancel();
-				}
+				}*/
+				changeData(view);
 			} else if (which == DialogInterface.BUTTON_NEGATIVE){
 				ChangeDataFragment.this.getDialog().cancel();
 			}
@@ -169,7 +171,7 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 			editText.setText(row.getData());
 		}
 
-		private Boolean changeData(View view){
+		private void changeData(View view){
 			EditText editText = view.findViewById(R.id.dialog_data_change);
 			String data = String.valueOf(editText.getText());
 
@@ -177,10 +179,34 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 				return Boolean.FALSE;
 			}*/
 
-			row.setData(data);
-			row.setHasChanged();
+			Map map = new HashMap();
+			map.put("data", data);
+			map.put("row", row);
+			new validateData(new TaskTracer() {
+				@Override
+				public void onTaskCompleted(Object object) {
+					Snackbar snackbar = Snackbar.make(coordinatorLayout,
+							R.string.snackbar_row_list_row_update, Snackbar.LENGTH_LONG);
+					snackbar.show();
+					taskTracer.onTaskCompleted(new Object());
+					//ChangeDataFragment.this.getDialog().cancel();
+				}
 
-			return Boolean.TRUE;
+				@Override
+				public void onTaskInProgress() {
+
+				}
+
+				@Override
+				public void onTaskFailed(Exception exception) {
+					Snackbar snackbar = Snackbar.make(coordinatorLayout,
+							R.string.snakcbar_row_list_row_error, Snackbar.LENGTH_LONG);
+					snackbar.show();
+					taskTracer.onTaskFailed(exception);
+					//ChangeDataFragment.this.getDialog().cancel();
+				}
+			}).execute(map, getContext());
+			//row.setHasChanged();
 		}
 
 		/*private Boolean checkDataRegex(String data) {

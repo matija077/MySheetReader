@@ -11,6 +11,7 @@ import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.File;
@@ -31,6 +32,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 	private List<Block> blocks;
 	private TaskTracer taskTracer;
 	private Exception exception;
+	private Double dataDouble;
 
 	public GoogleSheetsApiMain(TaskTracer taskTracer) {
 		this.taskTracer = taskTracer;
@@ -50,6 +52,10 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 
 	public Exception getException() {
 		return exception;
+	}
+
+	public Double getDataDouble() {
+		return dataDouble;
 	}
 
 	@Override
@@ -110,6 +116,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			ParseValueRange parseValueRange = new ParseValueRange();
 			blocks = parseValueRange.parseListOfRangesGetData(valueRanges);
 			//taskTracer.onTaskCompleted(new Object());
+			saveToFile();
 			return Boolean.TRUE;
 	} catch (Exception e) {
 			Log.e(TAG, "ola");
@@ -167,6 +174,61 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 	@Override
 	public Sheets getSheets() {
 		return super.getSheets();
+	}
+
+	public Boolean saveOneRow(Block.Category.Row row, String data, Context context) {
+		try {
+			prepare(context);
+			Sheets sheets = getSheets();
+			this.context = context;
+
+			List<List<Object>> values = new ArrayList<>();
+			Block block = new Block("temp");
+			block.createCategory("temp");
+			block.addRow(0, row.getSubCategory(), data,
+					row.getDataDouble(), row.getRowRow());
+			List<Object> value = prepareRow(block.getRow(0, 0)
+			);
+			values.add(value);
+			ValueRange valueRange = new ValueRange()
+					.setValues(values);
+
+			String spreadSheetId = readFromFile();
+			UpdateValuesResponse result = sheets.spreadsheets().values().update(spreadSheetId,
+					row.getRowRow(), valueRange)
+					.setValueInputOption("USER_ENTERED")
+					.execute();
+			return Boolean.TRUE;
+		}catch (Exception e) {
+			Log.e(TAG, "ola");
+			exception = e;
+			return  Boolean.FALSE;
+		}
+	}
+
+	public Boolean getOneRow(Block.Category.Row row, Context context) {
+		try {
+			prepare(context);
+			Sheets sheets = getSheets();
+			this.context = context;
+
+			String spreadSheetId = readFromFile();
+			ValueRange valueRange = sheets.spreadsheets().values().get(spreadSheetId,
+					row.getRowRow())
+					.setValueRenderOption("UNFORMATTED_VALUE")
+					.execute();
+
+			List<List<Object>> valuesData = valueRange.getValues();
+			List<Object> rowData = valuesData.get(0);
+			String dataDouble = String.valueOf(rowData.get(0));
+			this.dataDouble = Double.valueOf(dataDouble);
+
+			return Boolean.TRUE;
+		} catch (Exception e) {
+			Log.e(TAG, "ola");
+			exception = e;
+			return  Boolean.FALSE;
+		}
 	}
 
 	protected void saveToFile() {

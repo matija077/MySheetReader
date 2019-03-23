@@ -146,8 +146,12 @@ public class Block implements Serializable {
 			public void setData(String data) {
 				this.data = data;
 				//resetting dataInteger so we don't have to change createDatatInteger
-				this.dataDouble = 0.0;
-				createDataInteger(data);
+				/*this.dataDouble = 0.0;
+				createDataInteger(data);*/
+			}
+
+			public void setDataDouble(Double data){
+				this.dataDouble = data;
 			}
 
 			public Boolean getHasChanged() {
