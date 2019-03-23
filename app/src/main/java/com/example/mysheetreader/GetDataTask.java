@@ -70,69 +70,16 @@ public class GetDataTask extends AsyncTask {
 
 	@Override
 	protected Object doInBackground(Object... params) {
-		Map map = (Map) params[0];
 		try {
-			String url = (String) map.get("url");
-			String maxRows = (String) String.valueOf(map.get("maxRows"));
-			context = (Context) params[1];
-			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
-
-			String sheetId = url.substring(url.indexOf('=') + 1);
-			// 3 for 3 characters in '/d/'
-			spreadsheetID = url.substring(url.indexOf("/d/") + 3, url.indexOf("/edit"));
-			String sheetName = "";
-
-			String columnStart = "A";
-			String columnEnd = "C";
-			String startRow = "3";
-
-			String endRowFixedLenght = String.valueOf(Integer.parseInt(startRow) +
-					numberOfRowsFixedLenght);
-			//String dataRange = columnStart + startRow + ":" + columnEnd + endRowFixedLenght;
-			String dataRange = "A3" + ":" + "C" + maxRows;
-
-
-			GoogleAccountCredential credential =
-					GoogleAccountCredential.usingOAuth2(context,
-							ImmutableList.of(
-									"https://www.googleapis.com/auth/spreadsheets"
-							));
-			Account account = googleSignInAccount.getAccount();
-			credential.setSelectedAccount(account);
-
-			Sheets sheets = new Sheets(HTTP_TRANSPORT, JSON_FACTORY, credential);
-
-			// don't forget execute. In URL there is an sheetId but not Title. And Title is need
-			// for Range A1 notaion. So we get the whoel spreadhseet object and compare ids until we
-			// find a correct sheet and extract title from it and add to ranges.
-			Spreadsheet requuestSpreadsheet = sheets.spreadsheets().get(spreadsheetID).execute();
-			ArrayList sheetsTemp = (ArrayList) requuestSpreadsheet.getSheets();
-			for (int i=0; i<sheetsTemp.size(); i++) {
-				Sheet sheet = (Sheet) sheetsTemp.get(i);
-				SheetProperties sheetProperties = sheet.getProperties();
-				int tempSheetId = sheetProperties.getSheetId();
-				if (String.valueOf(tempSheetId).equals(sheetId)) {
-					sheetName = sheetProperties.getTitle();
-					dataRange = sheetName + "!" + dataRange;
-
-				}
+			GoogleSheetApiHelper googleSheetApiHelper = new GoogleSheetsApiMain();
+			if (googleSheetApiHelper.getData(params)) {
+				spreadsheetID = ((GoogleSheetsApiMain) googleSheetApiHelper).getSpreadsheetID();
+				blocks = ((GoogleSheetsApiMain) googleSheetApiHelper).getBlocks();
+			} else {
+				exception = ((GoogleSheetsApiMain) googleSheetApiHelper).getException();
+				cancel(true);
 			}
-			sheetsTemp = null;
-			requuestSpreadsheet = null;
 
-
-			List<ValueRange> valueRanges = new ArrayList<>();
-			ValueRange result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
-					.setValueRenderOption("FORMULA")
-					.execute();
-			valueRanges.add(result);
-			result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
-					.setValueRenderOption("UNFORMATTED_VALUE")
-					.execute();
-			valueRanges.add(result);
-
-			ParseValueRange parseValueRange = new ParseValueRange();
-			blocks = parseValueRange.parseListOfRangesGetData(valueRanges);
 			/*String rowStartVariable = endRowFixedLenght;
 			blocks = new ArrayList<>();
 			ParseValueRange parseValueRange = new ParseValueRange();
@@ -175,7 +122,6 @@ public class GetDataTask extends AsyncTask {
 
 
 			Log.d(TAG, "opa");
-			saveToFile();
 
 		} catch (Exception _exception) {
 			exception = _exception;
@@ -209,23 +155,5 @@ public class GetDataTask extends AsyncTask {
 		dataRange = sheetName + "!" + columnStart + rowStart + ":" + columnEnd + rowEnd;
 
 		return dataRange;
-	}
-
-	protected void saveToFile() {
-		FileOutputStream fileOutputStream;
-		String filename = context.getResources().getString(R.string.file_name);
-		File file = new File(context.getFilesDir(), filename);
-
-		try {
-			fileOutputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
-			fileOutputStream.write(spreadsheetID.getBytes());
-			fileOutputStream.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			cancel(true);
-		} catch (IOException e) {
-			e.printStackTrace();
-			cancel(true);
-		}
 	}
 }
