@@ -28,7 +28,7 @@ public abstract class GoogleSheetApiHelper {
 
 	public abstract Boolean  getData(Object... params);
 
-	public abstract Boolean savedata();
+	public abstract Boolean savedata(Object... params);
 
 	public Sheets getSheets() {
 		return sheets;

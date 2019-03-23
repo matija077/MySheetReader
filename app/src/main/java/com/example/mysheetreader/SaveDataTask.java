@@ -50,22 +50,12 @@ public class SaveDataTask extends AsyncTask {
 	@Override
 	protected Object doInBackground(Object... objects) {
 		try {
-			Map map = (Map) objects[0];
-			context = (Context) objects[1];
-			category = (Block.Category) map.get(context.getResources().getString(R.string.row_key));
-			parseValueRange = new ParseValueRange();
+			GoogleSheetApiHelper googleSheetApiHelper = new GoogleSheetsApiMain();
+			if (!googleSheetApiHelper.savedata(objects)) {
+				exception = ((GoogleSheetsApiMain) googleSheetApiHelper).getException();
+				cancel(true);
+			}
 
-			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
-
-			GoogleAccountCredential credential =
-					GoogleAccountCredential.usingOAuth2(context,
-							ImmutableList.of(
-									"https://www.googleapis.com/auth/spreadsheets"
-							));
-			Account account = googleSignInAccount.getAccount();
-			credential.setSelectedAccount(account);
-
-			Sheets sheets = new Sheets(HTTP_TRANSPORT, JSON_FACTORY, credential);
 
 			/*List<Request> requests = new ArrayList<>();
 			for (Block.Category.Row row:category.getRows()) {
@@ -75,27 +65,6 @@ public class SaveDataTask extends AsyncTask {
 								.set)
 				}
 			}*/
-
-			List<ValueRange> data = new ArrayList<>();
-			for (Block.Category.Row row:category.getRows()) {
-				if (row.getHasChanged() == Boolean.TRUE) {
-					List<List<Object>> values = new ArrayList<>();
-					List<Object> value = prepareRow(row);
-					values.add(value);
-					data.add(new ValueRange()
-							.setRange(row.getRowRow())
-							.setValues(values));
-				}
-			}
-			String spreadSheetId = readFromFile();
-
-
-			BatchUpdateValuesRequest batchUpdateValuesRequest = new BatchUpdateValuesRequest()
-					.setValueInputOption("USER_ENTERED")
-					.setData(data);
-
-			BatchUpdateValuesResponse response = sheets.spreadsheets().values().batchUpdate(
-					spreadSheetId, batchUpdateValuesRequest).execute();
 
 
 			//TODO either category range and all rows, or row ranges and hasChanged and cellUpdate
@@ -123,36 +92,5 @@ public class SaveDataTask extends AsyncTask {
 		taskTracer.onTaskFailed(exception);
 	}
 
-	protected String readFromFile(){
-		// https://www.journaldev.com/9383/android-internal-storage-example-tutorial
-		String filename = context.getResources().getString(R.string.file_name);
-		File file = new File(context.getFilesDir(), filename);
-		FileInputStream fileInputStream;
-		String spreadsheetId = "";
 
-		try {
-			fileInputStream = context.openFileInput(filename);
-			int character;
-			while ( (character = fileInputStream.read()) != -1 ) {
-				spreadsheetId += Character.toString((char)character);
-			}
-			fileInputStream.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			exception = e;
-			cancel(true);
-		} catch (IOException e) {
-			e.printStackTrace();
-			exception = e;
-			cancel(true);
-		}
-
-		return spreadsheetId;
-	}
-
-	protected List<Object> prepareRow(Block.Category.Row row) {
-		List<Object> value = new ArrayList<>();
-		value.add(row.getData());
-		return value;
-	}
 }

@@ -17,7 +17,9 @@ public class ParseValueRange {
 		List<List<Object>> valuesData = valueRanges.get(0).getValues();
 		List<List<Object>> valuesDataDouble = valueRanges.get(1).getValues();
 		String range = valueRanges.get(0).getRange();
-		range = calculateRowRange(range, 0);
+		// beginign range is one lower than first row and then we always udpate for one row eacth time
+		// we enter the loop
+		range = calculateRowRange(range, -1);
 		List<Block> blocks = new ArrayList<>();
 		int blockCounter = 1;
 		final String blockTemplate = "Block";
@@ -32,6 +34,7 @@ public class ParseValueRange {
 				List<Object> rowDataDouble = null;
 				rowData = valuesData.get(i);
 				rowDataDouble = valuesDataDouble.get(i);
+				range = calculateRowRange(range, 1);
 				// and not empty
 				if (newBlock == Boolean.TRUE && rowData.size() > 0) {
 					blocks.add(block);
@@ -65,8 +68,6 @@ public class ParseValueRange {
 
 				block.addRow(block.getCategoresSize() - 1, value2, value3,
 						Double.valueOf(value3Double), range);
-
-				range = calculateRowRange(range, 1);
 			}
 		} catch (Exception exception) {
 			Log.d("a", "a");

@@ -6,12 +6,15 @@ import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -117,8 +120,43 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 }
 
 	@Override
-	public Boolean savedata() {
-	return Boolean.TRUE;
+	public Boolean savedata(Object...params) {
+		try {
+			Map map = (Map) params[0];
+			context = (Context) params[1];
+			Block.Category category = (Block.Category) map.get(context.getResources().getString(R.string.row_key));
+			ParseValueRange parseValueRange = new ParseValueRange();
+
+			prepare(context);
+			Sheets sheets = getSheets();
+
+			List<ValueRange> data = new ArrayList<>();
+			for (Block.Category.Row row : category.getRows()) {
+				if (row.getHasChanged() == Boolean.TRUE) {
+					List<List<Object>> values = new ArrayList<>();
+					List<Object> value = prepareRow(row);
+					values.add(value);
+					data.add(new ValueRange()
+							.setRange(row.getRowRow())
+							.setValues(values));
+				}
+			}
+			String spreadSheetId = readFromFile();
+
+
+			BatchUpdateValuesRequest batchUpdateValuesRequest = new BatchUpdateValuesRequest()
+					.setValueInputOption("USER_ENTERED")
+					.setData(data);
+
+			BatchUpdateValuesResponse response = sheets.spreadsheets().values().batchUpdate(
+					spreadSheetId, batchUpdateValuesRequest).execute();
+			return Boolean.TRUE;
+
+		} catch (Exception e) {
+			Log.e(TAG, "a");
+			exception = e;
+			return Boolean.FALSE;
+		}
 	}
 
 	@Override
@@ -148,4 +186,35 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			//taskTracer.onTaskFailed(e);
 		}
 	}
+
+		protected String readFromFile(){
+			// https://www.journaldev.com/9383/android-internal-storage-example-tutorial
+			String filename = context.getResources().getString(R.string.file_name);
+			File file = new File(context.getFilesDir(), filename);
+			FileInputStream fileInputStream;
+			String spreadsheetId = "";
+
+			try {
+				fileInputStream = context.openFileInput(filename);
+				int character;
+				while ( (character = fileInputStream.read()) != -1 ) {
+					spreadsheetId += Character.toString((char)character);
+				}
+				fileInputStream.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				exception = e;
+			} catch (IOException e) {
+				e.printStackTrace();
+				exception = e;
+			}
+
+			return spreadsheetId;
+		}
+
+		protected List<Object> prepareRow(Block.Category.Row row) {
+			List<Object> value = new ArrayList<>();
+			value.add(row.getData());
+			return value;
+		}
 }
