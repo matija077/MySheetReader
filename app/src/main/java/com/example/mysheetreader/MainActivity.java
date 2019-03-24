@@ -114,11 +114,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			requestPermissions(new String[]{Manifest.permission.INTERNET},
 									1);
 		}
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS)
+		/*if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS)
 				!= PackageManager.PERMISSION_GRANTED) {
 			requestPermissions(new String[]{Manifest.permission.GET_ACCOUNTS},
 					2);
-		}
+		}*/
 	}
 
 	@Override
@@ -126,13 +126,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		super.onResume();
 		urlDefault = sharedPreferences.getString(getResources().getString
 				(R.string.preference_url_key), "");
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-
 	}
 
 	@Override
@@ -164,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 			}
 			return true;
+		} else if (id == R.id.action_logout) {
+			signOut();
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -353,6 +348,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
 		preferencesEditor.clear();
 		preferencesEditor.apply();
+	}
+
+	private void signOut() {
+		mGoogleSignInClient.signOut();
+		finish();
+		startActivity(getIntent());
 	}
 
 	public void showData(Object object){
