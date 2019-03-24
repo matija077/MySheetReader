@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="switch_preference_url"
+        android:title="Save url"
+        android:summary="@string/preference_sumarry_url"/>
+    <EditTextPreference
+        android:defaultValue="400"
+        android:key="edit_text_preference_max_rows"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Max rows"
+        android:inputType="number"
+        android:summary="@string/preference_summary_max_rows"/>
+</PreferenceScreen>

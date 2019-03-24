@@ -1,10 +1,12 @@
 package com.example.mysheetreader;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +19,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
@@ -26,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -38,7 +42,9 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.api.services.sheets.v4.SheetsScopes;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -52,7 +58,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	SignInButton signInButton;
 	TextView test;
 	CoordinatorLayout coordinatorLayout;
-
+	ProgressBar progressBar;
+	SharedPreferences sharedPreferences;
+	static String urlToSave;
+	static String urlDefault;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		signInButton = findViewById(R.id.sign_in_button);
 		test = findViewById(R.id.test);
 		coordinatorLayout = findViewById(R.id.mainActivityCordinatorLayout);
+		progressBar = findViewById(R.id.progress_bar);
 
 		FloatingActionButton fab = findViewById(R.id.fab);
 		fab.setOnClickListener(this);
@@ -76,6 +86,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				.build();
 
 		mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+		/*SharedPreferences sharedPreferences = this.getSharedPreferences(getString(
+				R.string.preference_file_key), this.MODE_PRIVATE);
+		urlSharedPreferences = getResources().getString(R.string.preference_url_key);
+		maxRows = getResources().getString(R.string.preference_max_rowss_key);*/
+
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		sharedPreferences = getSharedPreferences(getResources().getString(R.string.preference_file_key), MODE_PRIVATE);
 	}
 
 	@Override
@@ -104,6 +122,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		urlDefault = sharedPreferences.getString(getResources().getString
+				(R.string.preference_url_key), "");
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -119,6 +151,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
+			try {
+				Intent intent = new Intent(this, SettingsActivity.class);
+				//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+				/*getSupportFragmentManager()
+						.beginTransaction()
+						.replace(android.R.id.content, new SettingsFragment())
+						.commit();*/
+			} catch(Exception exception) {
+				Log.e(TAG, "ola");
+
+			}
 			return true;
 		}
 
@@ -135,10 +179,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				FragmentManager fragmentManager = getSupportFragmentManager();
 				UrlDialogFragment urlDialogFragment = UrlDialogFragment.newInstance(new TaskTracer() {
 					@Override
-					public void onTaskCompleted() {
+					public void onTaskCompleted(Object object) {
 						Snackbar snackbar = Snackbar.make(coordinatorLayout,
 								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
 						snackbar.show();
+						SharedPreferences sharedDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+						Boolean urlBoolean = sharedDefaultPreferences.getBoolean("switch_preference_url", Boolean.FALSE);
+						if (urlBoolean == Boolean.TRUE) {
+							saveUrl();
+						} /*else {
+							clearUrl();
+						}*/
+						showData(object);
 					}
 
 					@Override
@@ -148,9 +200,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 					@Override
 					public void onTaskFailed(Exception exception) {
+						Snackbar snackbar = Snackbar.make(coordinatorLayout,
+								R.string.snackbar_main_activity_error, Snackbar.LENGTH_LONG);
+						snackbar.show();
 
 					}
-				});
+				}, progressBar);
 				urlDialogFragment.show(fragmentManager, "name");
 				break;
 		}
@@ -192,14 +247,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	public static class UrlDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 		View view;
 		static TaskTracer taskTracer;
+		static ProgressBar progressBar;
+		static String maxRowsDIalog;
+		static Boolean urlBoolean;
 
 		public UrlDialogFragment() {
 
 		}
 
-		public static UrlDialogFragment newInstance(TaskTracer _taskTracer){
+		public static UrlDialogFragment newInstance(TaskTracer _taskTracer, ProgressBar _progressBar){
 			UrlDialogFragment urlDialogFragment = new UrlDialogFragment();
 			taskTracer = _taskTracer;
+			progressBar = _progressBar;
 			return urlDialogFragment;
 		}
 
@@ -222,6 +281,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			LayoutInflater inflater = getActivity().getLayoutInflater();
 
 			view = inflater.inflate(R.layout.dialog_url, null);
+			SharedPreferences sharedDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+			/*urlSharedPreferences = sharedPreferences.getString(getResources().getString(R.string.preference_url_key), "");
+			maxRowsDIalog = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);*/
+			urlBoolean = sharedDefaultPreferences.getBoolean("switch_preference_url", Boolean.FALSE);
+			maxRowsDIalog = sharedDefaultPreferences.getString("edit_text_preference_max_rows", "400");
+			if (urlBoolean) {
+				if (!urlDefault.equals("")) {
+					EditText urlView = view.findViewById(R.id.text_dialog_url);
+					urlView.setText(urlDefault);
+				}
+			}
 
 			builder
 					.setView(view)
@@ -235,19 +305,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			Map params = new HashMap();
-			EditText urlView = view.findViewById(R.id.text_dialog_url);
+			final EditText urlView = view.findViewById(R.id.text_dialog_url);
 			//text is actually spanable string builder
 			params.put("url", urlView.getText().toString());
+			params.put("maxRows", maxRowsDIalog);
 
 			if (which == DialogInterface.BUTTON_POSITIVE) {
+				progressBar.setVisibility(View.VISIBLE);
 				new GetDataTask(new TaskTracer() {
 					@Override
-					public void onTaskCompleted() {
+					public void onTaskCompleted(Object object) {
 						/*FragmentActivity activity = (FragmentActivity) view.getContext();
 						Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.mainActivityCordinatorLayout),
 								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
 						snackbar.show();*/
-						taskTracer.onTaskCompleted();
+						progressBar.setVisibility(View.GONE);
+						//object = urlView.getText().toString();
+						urlToSave = urlView.getText().toString();
+						taskTracer.onTaskCompleted(object);
 					}
 
 					@Override
@@ -257,12 +332,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 					@Override
 					public void onTaskFailed(Exception exception) {
+						progressBar.setVisibility(View.GONE);
 						taskTracer.onTaskFailed(exception);
 					}
 				}).execute(params, getActivity());
 			} else if (which == DialogInterface.BUTTON_NEGATIVE) {
 				UrlDialogFragment.this.getDialog().cancel();
 			}
+		}
+	}
+
+	public void saveUrl() {
+		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+		preferencesEditor.putString(getResources().getString(R.string.preference_url_key),
+				String.valueOf(urlToSave));
+		preferencesEditor.apply();
+	}
+
+	public void clearUrl() {
+		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+		preferencesEditor.clear();
+		preferencesEditor.apply();
+	}
+
+	public void showData(Object object){
+		Intent intent = new Intent(MainActivity.this, BlockList.class);
+		Bundle bundle = new Bundle();
+		bundle.putSerializable(getResources().getString(R.string.blocks_Key), (Serializable) object);
+		intent.putExtras(bundle);
+		try {
+			startActivity(intent);
+		} catch(Exception exception) {
+			Log.e(TAG, String.valueOf(exception));
 		}
 	}
 }

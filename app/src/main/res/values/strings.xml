@@ -3,4 +3,29 @@
     <string name="action_settings">Settings</string>
     <string name="url_fragment_title">Write sheet URL</string>
     <string name="snackbar_main_activity_get">Data fetched</string>
+    <string name="snackbar_main_activity_error">Failed to fetch data</string>
+    <string name="snkacbar_row_list_activity_update">Data updated</string>
+    <string name="snkacbar_row_list_activity_error">Data update failed</string>
+    <string name="snackbar_row_list_row_update">Row updated</string>
+    <string name="snakcbar_row_list_row_error">Row update failed</string>
+    <string name="blocks_Key">blocks</string>
+    <string name="category_key">categories</string>
+    <string name="row_key">rows</string>
+    <string name="title_activity_block_list">blockList</string>
+    <string name="title_activity_category">Category</string>
+    <string name="title_activity_row_list">rowList</string>
+    <string name="data_row_button_apply">Apply</string>
+    <string name="data_change_fragment_title">Change data</string>
+    <string name="data_change_fragmebnt_positive_button">Apply</string>
+    <string name="data_change_fragment_negative_button">Cancel</string>
+    <string name="file_name">MySheetReaderFile</string>
+    <string name="bundle_position">bundle_posiiton</string>
+    <string name="preference_file_key">preference_my_sheet_reader</string>
+    <string name="preference_max_rowss_key">max_rows</string>
+    <string name="preference_url_key">url</string>
+    <string name="preference_sumarry_url">Turn this option on to remember url</string>
+    <string name="preference_summary_max_rows">Remember max rows</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
