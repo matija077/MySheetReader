@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		urlSharedPreferences = getResources().getString(R.string.preference_url_key);
 		maxRows = getResources().getString(R.string.preference_max_rowss_key);*/
 
+		//add default defaultPreferences in settings and initialize sharedPreferences
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		sharedPreferences = getSharedPreferences(getResources().getString(R.string.preference_file_key), MODE_PRIVATE);
 	}
@@ -171,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				signIn();
 				break;
 			case R.id.fab:
+				// if we fetch data then we check url deafautl preference and see if we need to save
+				// url preferences
 				FragmentManager fragmentManager = getSupportFragmentManager();
 				UrlDialogFragment urlDialogFragment = UrlDialogFragment.newInstance(new TaskTracer() {
 					@Override
@@ -350,6 +353,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		preferencesEditor.apply();
 	}
 
+	// https://stackoverflow.com/questions/3053761/reload-activity-in-android
 	private void signOut() {
 		mGoogleSignInClient.signOut();
 		finish();

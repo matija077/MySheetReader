@@ -26,6 +26,7 @@ public class ParseValueRange {
 		Block block = new Block(blockTemplate + String.valueOf(blockCounter));
 
 		Boolean newBlock = Boolean.FALSE;
+		Boolean header = Boolean.FALSE;
 
 		try {
 
@@ -37,6 +38,10 @@ public class ParseValueRange {
 				range = calculateRowRange(range, 1);
 				// and not empty
 				if (newBlock == Boolean.TRUE && rowData.size() > 0) {
+					if (header == Boolean.TRUE) {
+						header = Boolean.FALSE;
+						continue;
+					}
 					blocks.add(block);
 					blockCounter += 1;
 					block = new Block(blockTemplate + String.valueOf(blockCounter));
@@ -45,6 +50,7 @@ public class ParseValueRange {
 
 				if (rowData.size() == 0) {
 					newBlock = Boolean.TRUE;
+					header = Boolean.TRUE;
 					continue;
 				}
 

@@ -79,7 +79,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			String endRowFixedLenght = String.valueOf(Integer.parseInt(startRow) +
 					numberOfRowsFixedLenght);
 			//String dataRange = columnStart + startRow + ":" + columnEnd + endRowFixedLenght;
-			String dataRange = "A3" + ":" + "C" + maxRows;
+			String dataRange = "A2" + ":" + "C" + maxRows;
 
 			prepare(context);
 			Sheets sheets = getSheets();
