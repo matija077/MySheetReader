@@ -25,6 +25,7 @@
     <string name="preference_url_key">url</string>
     <string name="preference_sumarry_url">Turn this option on to remember url</string>
     <string name="preference_summary_max_rows">Remember max rows</string>
+    <string name="preference_summary_number_of_blocks">Number of blocks used</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

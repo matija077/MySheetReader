@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		static ProgressBar progressBar;
 		static String maxRowsDIalog;
 		static Boolean urlBoolean;
+		static String numberOfBlocks;
 
 		public UrlDialogFragment() {
 
@@ -283,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			/*urlSharedPreferences = sharedPreferences.getString(getResources().getString(R.string.preference_url_key), "");
 			maxRowsDIalog = sharedPreferences.getInt(getResources().getString(R.string.preference_max_rowss_key), 400);*/
 			urlBoolean = sharedDefaultPreferences.getBoolean("switch_preference_url", Boolean.FALSE);
+			numberOfBlocks = sharedDefaultPreferences.getString("edit_text_preference_number_of_blocks", "10");
 			maxRowsDIalog = sharedDefaultPreferences.getString("edit_text_preference_max_rows", "400");
 			if (urlBoolean) {
 				if (!urlDefault.equals("")) {
@@ -307,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			//text is actually spanable string builder
 			params.put("url", urlView.getText().toString());
 			params.put("maxRows", maxRowsDIalog);
+			params.put("numberOfBlocks", numberOfBlocks);
 
 			if (which == DialogInterface.BUTTON_POSITIVE) {
 				progressBar.setVisibility(View.VISIBLE);

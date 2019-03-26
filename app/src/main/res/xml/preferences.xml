@@ -14,4 +14,10 @@
         android:title="Max rows"
         android:inputType="number"
         android:summary="@string/preference_summary_max_rows"/>
+    <EditTextPreference
+        android:defaultValue="5"
+        android:key="edit_text_preference_number_of_blocks"
+        android:title="Blocks number"
+        android:summary="@string/preference_summary_number_of_blocks"
+        android:inputType="number"/>
 </PreferenceScreen>

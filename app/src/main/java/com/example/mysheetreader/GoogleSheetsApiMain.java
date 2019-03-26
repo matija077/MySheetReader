@@ -64,6 +64,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 		try {
 			String url = (String) map.get("url");
 			String maxRows = (String) String.valueOf(map.get("maxRows"));
+			String numberOfBlocks = String.valueOf(map.get("numberOfBlocks"));
 			context = (Context) params[1];
 			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
 
@@ -114,7 +115,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			valueRanges.add(result);
 
 			ParseValueRange parseValueRange = new ParseValueRange();
-			blocks = parseValueRange.parseListOfRangesGetData(valueRanges);
+			blocks = parseValueRange.parseListOfRangesGetData(valueRanges, numberOfBlocks);
 			//taskTracer.onTaskCompleted(new Object());
 			saveToFile();
 			return Boolean.TRUE;

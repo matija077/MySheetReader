@@ -13,7 +13,7 @@ public class ParseValueRange {
 	public ParseValueRange(){
 	}
 
-	public List<Block> parseListOfRangesGetData(List<ValueRange> valueRanges) {
+	public List<Block> parseListOfRangesGetData(List<ValueRange> valueRanges, String numberOfBlocks) {
 		List<List<Object>> valuesData = valueRanges.get(0).getValues();
 		List<List<Object>> valuesDataDouble = valueRanges.get(1).getValues();
 		String range = valueRanges.get(0).getRange();
@@ -22,6 +22,7 @@ public class ParseValueRange {
 		range = calculateRowRange(range, -1);
 		List<Block> blocks = new ArrayList<>();
 		int blockCounter = 1;
+		int numberOfBlocksInt = Integer.valueOf(numberOfBlocks);
 		final String blockTemplate = "Block";
 		Block block = new Block(blockTemplate + String.valueOf(blockCounter));
 
@@ -51,7 +52,11 @@ public class ParseValueRange {
 				if (rowData.size() == 0) {
 					newBlock = Boolean.TRUE;
 					header = Boolean.TRUE;
-					continue;
+					if (blocks.size() + 1 >= numberOfBlocksInt) {
+						break;
+					} else {
+						continue;
+					}
 				}
 
 
