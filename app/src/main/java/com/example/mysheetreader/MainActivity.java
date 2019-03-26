@@ -43,6 +43,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.api.services.sheets.v4.SheetsScopes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	SharedPreferences sharedPreferences;
 	static String urlToSave;
 	static String urlDefault;
+	List<String> sheetNames;
+	String spreadsheetURL;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		//add default defaultPreferences in settings and initialize sharedPreferences
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		sharedPreferences = getSharedPreferences(getResources().getString(R.string.preference_file_key), MODE_PRIVATE);
+		sheetNames = new ArrayList<>();
 	}
 
 	@Override
@@ -127,6 +131,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		super.onResume();
 		urlDefault = sharedPreferences.getString(getResources().getString
 				(R.string.preference_url_key), "");
+		spreadsheetURL = sharedPreferences.getString(getResources().getString(R.string.preference_spreadsheetURL_key), "");
+		int sheetNamesSize = Integer.valueOf(sharedPreferences.getString(getResources().getString
+				(R.string.preference_sheetNames_size_key), "0"));
+		if (sheetNames != null) {
+			sheetNames = new ArrayList<>();
+		}
+		for (int i=1; i<=sheetNamesSize; i++) {
+			String temp = sharedPreferences.getString(getResources().getString
+					(R.string.preference_sheetName_key) + String.valueOf(i), "");
+			sheetNames.add(temp);
+		}
 	}
 
 	@Override
@@ -202,6 +217,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 								R.string.snackbar_main_activity_error, Snackbar.LENGTH_LONG);
 						snackbar.show();
 
+					}
+
+					// (blocks, sheetNames, spreadsheetURL)
+					@Override
+					public void onMultipleTaskCompleted(Object[] objects) {
+						Snackbar snackbar = Snackbar.make(coordinatorLayout,
+								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
+						snackbar.show();
+						SharedPreferences sharedDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+						Boolean urlBoolean = sharedDefaultPreferences.getBoolean("switch_preference_url", Boolean.FALSE);
+						if (urlBoolean == Boolean.TRUE) {
+							saveUrl();
+						} /*else {
+							clearUrl();
+						}*/
+						sheetNames = (List<String>) objects[1];
+						spreadsheetURL = (String) objects[2];
+						saveSheetNamesAndUSpreadsheetURL();
+						showData(objects[0]);
 					}
 				}, progressBar);
 				urlDialogFragment.show(fragmentManager, "name");
@@ -336,6 +370,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						progressBar.setVisibility(View.GONE);
 						taskTracer.onTaskFailed(exception);
 					}
+
+					// (blocks, sheetNames, spreadsheetURL)
+					@Override
+					public void onMultipleTaskCompleted(Object[] objects) {
+						progressBar.setVisibility(View.GONE);
+						urlToSave = urlView.getText().toString();
+						taskTracer.onMultipleTaskCompleted(objects);
+					}
 				}).execute(params, getActivity());
 			} else if (which == DialogInterface.BUTTON_NEGATIVE) {
 				UrlDialogFragment.this.getDialog().cancel();
@@ -353,6 +395,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	public void clearUrl() {
 		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
 		preferencesEditor.clear();
+		preferencesEditor.apply();
+	}
+
+	public void saveSheetNamesAndUSpreadsheetURL() {
+		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+		preferencesEditor.putString(getResources().getString(R.string.preference_spreadsheetURL_key),
+				String.valueOf(spreadsheetURL));
+
+		int i = 1;
+		preferencesEditor.putString(getResources().getString(R.string.preference_sheetNames_size_key),
+				String.valueOf(sheetNames.size()));
+
+		for (String sheetName:sheetNames) {
+			preferencesEditor.putString(getResources().getString(R.string.preference_sheetName_key)
+							+ String.valueOf(i), String.valueOf(sheetName));
+			i++;
+		}
 		preferencesEditor.apply();
 	}
 

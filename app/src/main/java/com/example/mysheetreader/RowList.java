@@ -91,6 +91,11 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 						public void onTaskFailed(Exception exception) {
 
 						}
+
+						@Override
+						public void onMultipleTaskCompleted(Object[] objects) {
+
+						}
 					});
 					FragmentManager fragmentManager = getSupportFragmentManager();
 					changeDataFragment.show(fragmentManager, "name");
@@ -213,6 +218,11 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 					taskTracer.onTaskFailed(exception);
 					//ChangeDataFragment.this.getDialog().cancel();
 				}
+
+				@Override
+				public void onMultipleTaskCompleted(Object[] objects) {
+
+				}
 			}).execute(map, getContext());
 			//row.setHasChanged();
 		}
@@ -247,6 +257,11 @@ public class RowList extends AppCompatActivity implements View.OnClickListener {
 				Snackbar snackbar = Snackbar.make(coordinatorLayout,
 						R.string.snkacbar_row_list_activity_error, Snackbar.LENGTH_LONG);
 				snackbar.show();
+			}
+
+			@Override
+			public void onMultipleTaskCompleted(Object[] objects) {
+
 			}
 		}).execute(map, this);
 

@@ -23,6 +23,9 @@
     <string name="preference_file_key">preference_my_sheet_reader</string>
     <string name="preference_max_rowss_key">max_rows</string>
     <string name="preference_url_key">url</string>
+    <string name="preference_spreadsheetURL_key">spreadsheetURL</string>
+    <string name="preference_sheetNames_size_key">sheeyNamesSize</string>
+    <string name="preference_sheetName_key">sheetName</string>
     <string name="preference_sumarry_url">Turn this option on to remember url</string>
     <string name="preference_summary_max_rows">Remember max rows</string>
     <string name="preference_summary_number_of_blocks">Number of blocks used</string>

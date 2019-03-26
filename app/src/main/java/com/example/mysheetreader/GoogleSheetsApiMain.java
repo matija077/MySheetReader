@@ -69,6 +69,8 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
 
 			String sheetId = url.substring(url.indexOf('=') + 1);
+			String urlToSave = url.substring(0, url.indexOf('=') + 1);
+			this.setSpreadsheetURL(urlToSave);
 			// 3 for 3 characters in '/d/'
 			spreadsheetID = url.substring(url.indexOf("/d/") + 3, url.indexOf("/edit"));
 			String sheetName = "";
@@ -84,25 +86,11 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 
 			prepare(context);
 			Sheets sheets = getSheets();
-
-			// don't forget execute. In URL there is an sheetId but not Title. And Title is need
-			// for Range A1 notaion. So we get the whoel spreadhseet object and compare ids until we
-			// find a correct sheet and extract title from it and add to ranges.
-			Spreadsheet requuestSpreadsheet = sheets.spreadsheets().get(spreadsheetID).execute();
-			ArrayList sheetsTemp = (ArrayList) requuestSpreadsheet.getSheets();
-			for (int i=0; i<sheetsTemp.size(); i++) {
-				Sheet sheet = (Sheet) sheetsTemp.get(i);
-				SheetProperties sheetProperties = sheet.getProperties();
-				int tempSheetId = sheetProperties.getSheetId();
-				if (String.valueOf(tempSheetId).equals(sheetId)) {
-					sheetName = sheetProperties.getTitle();
-					dataRange = sheetName + "!" + dataRange;
-
-				}
-			}
-			sheetsTemp = null;
-			requuestSpreadsheet = null;
-
+			this.setDataRange(dataRange);
+			this.setSheetId(sheetId);
+			this.setSpreadsheetID(spreadsheetID);
+			prepareSheets();
+			sheetName = this.getSheetName();
 
 			List<ValueRange> valueRanges = new ArrayList<>();
 			ValueRange result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)
