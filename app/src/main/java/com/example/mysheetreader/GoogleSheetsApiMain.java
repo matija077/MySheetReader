@@ -65,14 +65,22 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			String url = (String) map.get("url");
 			String maxRows = (String) String.valueOf(map.get("maxRows"));
 			String numberOfBlocks = String.valueOf(map.get("numberOfBlocks"));
-			Boolean sheetNameUsed = (Boolean) map.get("sheetNameUsed");
+			String sheetIDPreference = (String) map.get("sheetIDUsed");
 			context = (Context) params[1];
 			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
 
-			String sheetId = url.substring(url.indexOf('=') + 1);
+			String sheetId;
+			if (sheetIDPreference.equals("")) {
+				 sheetId = url.substring(url.indexOf('=') + 1);
+			} else {
+				sheetId = sheetIDPreference;
+			}
+
+			// url for spreadsheet wihtotu sheetgid
 			String urlToSave = url.substring(0, url.indexOf('=') + 1);
 			this.setSpreadsheetURL(urlToSave);
 			// 3 for 3 characters in '/d/'
+			// spreadsheetID to be saved in a file for saveData
 			spreadsheetID = url.substring(url.indexOf("/d/") + 3, url.indexOf("/edit"));
 			String sheetName = "";
 
@@ -92,6 +100,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			this.setSpreadsheetID(spreadsheetID);
 			prepareSheets();
 			sheetName = this.getSheetName();
+			dataRange = this.getDataRange();
 
 			List<ValueRange> valueRanges = new ArrayList<>();
 			ValueRange result = sheets.spreadsheets().values().get(spreadsheetID, dataRange)

@@ -70,6 +70,10 @@ public abstract class GoogleSheetApiHelper {
 		return spreadsheetURL;
 	}
 
+	public String getDataRange() {
+		return dataRange;
+	}
+
 	public List<String> getSheetNames() {
 		return sheetNames;
 	}

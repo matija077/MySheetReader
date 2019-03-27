@@ -356,6 +356,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			params.put("url", urlView.getText().toString());
 			params.put("maxRows", maxRowsDIalog);
 			params.put("numberOfBlocks", numberOfBlocks);
+			params.put("sheetIDUsed", "");
 
 			if (which == DialogInterface.BUTTON_POSITIVE) {
 				progressBar.setVisibility(View.VISIBLE);
@@ -436,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		params.put("sheetNames", sheetNames);*/
 
 
-		FragmentSheetNamesArrayAdapter fragmentSheetNamesArrayAdapter = new
+		final FragmentSheetNamesArrayAdapter fragmentSheetNamesArrayAdapter = new
 				FragmentSheetNamesArrayAdapter(this, R.layout.row, sheetNames,
 				spreadsheetURL, new FragmentSheetNamesArrayAdapter.SheetNameInterface() {
 			@Override
@@ -447,11 +448,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				numberOfBlocks = sharedDefaultPreferences.getString("edit_text_preference_number_of_blocks", "10");
 				maxRowsDIalog = sharedDefaultPreferences.getString("edit_text_preference_max_rows", "400");
 
+				ListView listView = findViewById(R.id.main_fragment_list_view);
+				int position = listView.getPositionForView(v);
+				String sheetname = sheetNames.get(position);
+				String sheetID = sheetIDs.get(position);
+
 				Map params = new HashMap();
 				params.put("url", spreadsheetURL);
 				params.put("maxRows", maxRowsDIalog);
 				params.put("numberOfBlocks", numberOfBlocks);
-				params.put("sheetNameUsed", Boolean.TRUE);
+				params.put("sheetIDUsed", sheetID);
 
 				progressBar.setVisibility(View.VISIBLE);
 				new GetDataTask(new TaskTracer() {
