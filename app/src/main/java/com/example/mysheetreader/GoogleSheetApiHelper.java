@@ -31,9 +31,11 @@ public abstract class GoogleSheetApiHelper {
 	private String sheetName;
 	private String dataRange;
 	private List<String> sheetNames;
+	private List<String> sheetIds;
 
 	public GoogleSheetApiHelper() {
 		this.sheetNames = new ArrayList<>();
+		this.sheetIds = new ArrayList<>();
 	}
 
 	public abstract Boolean  getData(Object... params);
@@ -72,6 +74,10 @@ public abstract class GoogleSheetApiHelper {
 		return sheetNames;
 	}
 
+	public List<String> getSheetIds() {
+		return sheetIds;
+	}
+
 	public void prepare(Context context) {
 		GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
 
@@ -104,6 +110,8 @@ public abstract class GoogleSheetApiHelper {
 				}
 				String temp = sheetProperties.getTitle();
 				sheetNames.add(temp);
+				temp = String.valueOf(sheetProperties.getSheetId());
+				sheetIds.add(temp);
 			}
 			sheetsTemp = null;
 			requuestSpreadsheet = null;

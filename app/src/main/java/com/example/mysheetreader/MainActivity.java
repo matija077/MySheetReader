@@ -1,7 +1,6 @@
 package com.example.mysheetreader;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -15,13 +14,14 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	static String urlToSave;
 	static String urlDefault;
 	List<String> sheetNames;
+	List<String> sheetIDs;
 	String spreadsheetURL;
 
 	@Override
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		sharedPreferences = getSharedPreferences(getResources().getString(R.string.preference_file_key), MODE_PRIVATE);
 		sheetNames = new ArrayList<>();
+		sheetIDs = new ArrayList<>();
 	}
 
 	@Override
@@ -134,14 +137,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		spreadsheetURL = sharedPreferences.getString(getResources().getString(R.string.preference_spreadsheetURL_key), "");
 		int sheetNamesSize = Integer.valueOf(sharedPreferences.getString(getResources().getString
 				(R.string.preference_sheetNames_size_key), "0"));
-		if (sheetNames != null) {
+		if (sheetNames.size() > 0) {
 			sheetNames = new ArrayList<>();
+		}
+		if (sheetIDs.size() > 0) {
+			sheetIDs = new ArrayList<>();
 		}
 		for (int i=1; i<=sheetNamesSize; i++) {
 			String temp = sharedPreferences.getString(getResources().getString
 					(R.string.preference_sheetName_key) + String.valueOf(i), "");
 			sheetNames.add(temp);
+			temp = sharedPreferences.getString(getResources().getString(R.string.preference_sheetID_key) +
+					String.valueOf(i), "");
+			sheetIDs.add(temp);
 		}
+
+		displaySheetNamesFragemntt();
 	}
 
 	@Override
@@ -234,6 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						}*/
 						sheetNames = (List<String>) objects[1];
 						spreadsheetURL = (String) objects[2];
+						sheetIDs = (List<String>) objects[3];
 						saveSheetNamesAndUSpreadsheetURL();
 						showData(objects[0]);
 					}
@@ -403,16 +415,89 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		preferencesEditor.putString(getResources().getString(R.string.preference_spreadsheetURL_key),
 				String.valueOf(spreadsheetURL));
 
-		int i = 1;
 		preferencesEditor.putString(getResources().getString(R.string.preference_sheetNames_size_key),
 				String.valueOf(sheetNames.size()));
 
-		for (String sheetName:sheetNames) {
+		for (int i=1; i<=sheetNames.size(); i++) {
 			preferencesEditor.putString(getResources().getString(R.string.preference_sheetName_key)
-							+ String.valueOf(i), String.valueOf(sheetName));
-			i++;
+							+ String.valueOf(i), String.valueOf(sheetNames.get(i-1)));
+			preferencesEditor.putString(getResources().getString(R.string.preference_sheetID_key) +
+					String.valueOf(i), String.valueOf(sheetIDs.get(i-1)));
 		}
 		preferencesEditor.apply();
+	}
+
+	public void displaySheetNamesFragemntt() {
+		if (spreadsheetURL == "" || sheetNames == null || sheetIDs == null) {
+			return;
+		}
+		/*Map params = new HashMap<>();
+		params.put("spreadsheetURL", spreadsheetURL);
+		params.put("sheetNames", sheetNames);*/
+
+
+		FragmentSheetNamesArrayAdapter fragmentSheetNamesArrayAdapter = new
+				FragmentSheetNamesArrayAdapter(this, R.layout.row, sheetNames,
+				spreadsheetURL, new FragmentSheetNamesArrayAdapter.SheetNameInterface() {
+			@Override
+			public void onClicked(View v) {
+				String maxRowsDIalog;
+				String numberOfBlocks;
+				SharedPreferences sharedDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
+				numberOfBlocks = sharedDefaultPreferences.getString("edit_text_preference_number_of_blocks", "10");
+				maxRowsDIalog = sharedDefaultPreferences.getString("edit_text_preference_max_rows", "400");
+
+				Map params = new HashMap();
+				params.put("url", spreadsheetURL);
+				params.put("maxRows", maxRowsDIalog);
+				params.put("numberOfBlocks", numberOfBlocks);
+				params.put("sheetNameUsed", Boolean.TRUE);
+
+				progressBar.setVisibility(View.VISIBLE);
+				new GetDataTask(new TaskTracer() {
+					@Override
+					public void onTaskCompleted(Object object) {
+
+					}
+
+					@Override
+					public void onTaskInProgress() {
+
+					}
+
+					@Override
+					public void onTaskFailed(Exception exception) {
+
+					}
+
+					@Override
+					public void onMultipleTaskCompleted(Object[] objects) {
+						progressBar.setVisibility(View.GONE);
+						Snackbar snackbar = Snackbar.make(coordinatorLayout,
+								R.string.snackbar_main_activity_get, Snackbar.LENGTH_LONG);
+						snackbar.show();
+
+						sheetNames = (List<String>) objects[1];
+						spreadsheetURL = (String) objects[2];
+						saveSheetNamesAndUSpreadsheetURL();
+
+						showData(objects[0]);
+					}
+				}).execute(params, getApplication());
+			}
+		});
+		ListView listView = findViewById(R.id.main_fragment_list_view);
+		listView.setAdapter(fragmentSheetNamesArrayAdapter);
+		/*FragmentManager fragmentManager = getSupportFragmentManager();
+		SheetNamesFragment sheetNamesFragment = SheetNamesFragment.newInstance(params);
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		try {
+			fragmentTransaction.add(sheetNamesFragment, "ola");
+			fragmentTransaction.commit();
+		} catch (Exception e) {
+			Log.e(TAG, "ola");
+		}*/
 	}
 
 	// https://stackoverflow.com/questions/3053761/reload-activity-in-android

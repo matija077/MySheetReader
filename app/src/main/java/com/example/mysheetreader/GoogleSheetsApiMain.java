@@ -65,6 +65,7 @@ public class GoogleSheetsApiMain extends GoogleSheetApiHelper {
 			String url = (String) map.get("url");
 			String maxRows = (String) String.valueOf(map.get("maxRows"));
 			String numberOfBlocks = String.valueOf(map.get("numberOfBlocks"));
+			Boolean sheetNameUsed = (Boolean) map.get("sheetNameUsed");
 			context = (Context) params[1];
 			GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(context);
 

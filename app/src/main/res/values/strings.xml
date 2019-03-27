@@ -25,6 +25,7 @@
     <string name="preference_url_key">url</string>
     <string name="preference_spreadsheetURL_key">spreadsheetURL</string>
     <string name="preference_sheetNames_size_key">sheeyNamesSize</string>
+    <string name="preference_sheetID_key">sheetID</string>
     <string name="preference_sheetName_key">sheetName</string>
     <string name="preference_sumarry_url">Turn this option on to remember url</string>
     <string name="preference_summary_max_rows">Remember max rows</string>

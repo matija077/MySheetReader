@@ -47,6 +47,7 @@ public class GetDataTask extends AsyncTask {
 	List<Block> blocks;
 	String spreadsheetID;
 	List<String> sheetNames;
+	List<String> sheetIDs;
 	String spreadsheetURL;
 
 
@@ -79,6 +80,7 @@ public class GetDataTask extends AsyncTask {
 				blocks = ((GoogleSheetsApiMain) googleSheetApiHelper).getBlocks();
 				sheetNames = googleSheetApiHelper.getSheetNames();
 				spreadsheetURL = googleSheetApiHelper.getSpreadsheetURL();
+				sheetIDs = googleSheetApiHelper.getSheetIds();
 			} else {
 				exception = ((GoogleSheetsApiMain) googleSheetApiHelper).getException();
 				cancel(true);
@@ -141,7 +143,7 @@ public class GetDataTask extends AsyncTask {
 		super.onPostExecute(o);
 
 		//getDataTaskTracer.onTaskCompleted();
-		taskTracer.onMultipleTaskCompleted(blocks, sheetNames, spreadsheetURL);
+		taskTracer.onMultipleTaskCompleted(blocks, sheetNames, spreadsheetURL, sheetIDs);
 	}
 
 	@Override
