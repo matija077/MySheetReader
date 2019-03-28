@@ -115,6 +115,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		if (account != null) {
 			signInButton.setVisibility(View.GONE);
 			test.setText(account.getEmail());
+		} else {
+			ListView listView = findViewById(R.id.main_fragment_list_view);
+			listView.setVisibility(View.GONE);
 		}
 
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
@@ -152,7 +155,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			sheetIDs.add(temp);
 		}
 
-		displaySheetNamesFragemntt();
+		account = GoogleSignIn.getLastSignedInAccount(this);
+		if (account != null) {
+			displaySheetNamesFragemntt();
+		}
 	}
 
 	@Override
@@ -494,6 +500,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		});
 		ListView listView = findViewById(R.id.main_fragment_list_view);
 		listView.setAdapter(fragmentSheetNamesArrayAdapter);
+		listView.setVisibility(View.VISIBLE);
 		/*FragmentManager fragmentManager = getSupportFragmentManager();
 		SheetNamesFragment sheetNamesFragment = SheetNamesFragment.newInstance(params);
 		FragmentTransaction fragmentTransaction = fragmentManager
