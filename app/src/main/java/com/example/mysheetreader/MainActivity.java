@@ -409,9 +409,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		preferencesEditor.putString(getResources().getString(R.string.preference_url_key),
 				String.valueOf(urlToSave));
 		preferencesEditor.apply();
+
 	}
 
-	public void clearUrl() {
+	public void clearSharedPreferences() {
 		SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
 		preferencesEditor.clear();
 		preferencesEditor.apply();
@@ -516,6 +517,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	// https://stackoverflow.com/questions/3053761/reload-activity-in-android
 	private void signOut() {
 		mGoogleSignInClient.signOut();
+		clearSharedPreferences();
 		finish();
 		startActivity(getIntent());
 	}
